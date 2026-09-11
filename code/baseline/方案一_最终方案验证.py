@@ -1,4 +1,7 @@
-"""Offline mathematical/closed-loop checks; never connects to the official simulator."""
+"""【方案一】交接版（jqx）《最终可执行思路》的核心算法参考与本地验证＝交接材料中的“策略A”。
+发现一个频道即去定位清除；问题三 7 点覆盖，问题四 h=900 m 格网 37 点。
+
+Offline mathematical/closed-loop checks; never connects to the official simulator."""
 import json
 import math
 import random
@@ -400,7 +403,7 @@ def main():
     fmean=sum(p['fast_s'] for p in paired)/len(paired)
     bmean=sum(p['fallback_s'] for p in paired)/len(paired)
     tests['paired_ablation']={'cases':paired,'fast_mean_s':fmean,'fallback_mean_s':bmean,'relative_mean_reduction':1-fmean/bmean,'fast_wins':sum(p['fast_s']<p['fallback_s'] for p in paired),'all_cleared':True}
-    output = Path(__file__).with_name('最终方案验证结果.json')
+    output = Path(__file__).with_name('方案一_最终方案验证结果.json')
     output.write_text(json.dumps(tests, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(tests['summary'], ensure_ascii=False))
 

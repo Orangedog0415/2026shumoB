@@ -1,9 +1,9 @@
-"""方案1（交接版）压力测试：换误差模型、接收半径取下限、源全在边界（问题四朝外），检查是否全清并统计时间。
-只读调用 code/baseline/最终方案验证.py 中的 solve()/World，不修改交接文件；结果写到 results/。运行约 30–60 s。"""
+"""【方案一】交接版压力测试：换误差模型、接收半径取下限、源全在边界（问题四朝外），检查是否全清并统计时间。
+只读调用 code/baseline/方案一_最终方案验证.py 中的 solve()/World，不修改交接文件；结果写到 results/。运行约 30–60 s。"""
 import math, random, copy, hashlib, zlib, importlib.util, statistics as st, json, time
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
-spec=importlib.util.spec_from_file_location('J',str(HERE.parent/'baseline'/'最终方案验证.py')); J=importlib.util.module_from_spec(spec); spec.loader.exec_module(J)
+spec=importlib.util.spec_from_file_location('J',str(HERE.parent/'baseline'/'方案一_最终方案验证.py')); J=importlib.util.module_from_spec(spec); spec.loader.exec_module(J)
 dist=J.dist
 def h01(*k):
     return int(hashlib.md5(repr(k).encode()).hexdigest()[:12],16)/16**12
@@ -78,4 +78,4 @@ for mixed in (False,True):
     summ(lambda r:r['mixed']==mixed and r['layout']=='outward', q+' 源全在边界'+('且朝外' if mixed else ''))
     for n in (10,13,16):
         summ(lambda r,n=n:r['mixed']==mixed and r['n']==n and r['layout']=='uniform' and r['rmode']=='rand', q+' N=%d(均匀布源,各误差)'%n)
-json.dump(res,open(HERE/'results'/'压力测试结果.json','w',encoding='utf-8'),ensure_ascii=False,indent=0)
+json.dump(res,open(HERE/'results'/'方案一_压力测试结果.json','w',encoding='utf-8'),ensure_ascii=False,indent=0)

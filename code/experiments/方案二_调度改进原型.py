@@ -1,10 +1,11 @@
-"""审查原型（非正式策略）：批量扫描 + 顺路插入清除 + 垂直补测 + h=990 格网。
-仅用于验证《最终方案审查.md》中的改进方向；复用 code/baseline/最终方案验证.py 的几何函数和 World 仿真，
-不连接模拟器。参数未调优。运行：python 调度改进原型.py（约数分钟）。
+"""【方案二】审查原型（非正式策略）：批量扫描 + 顺路插入清除 + 垂直补测 + h=990 格网。主循环为 solve_v2()。
+注意：本文件中的 local_v2()、net990()、tour()、Src 也被【方案三】复用（见 方案三_参数扫描.py）。
+仅用于验证《最终方案审查.md》中的改进方向；复用 code/baseline/方案一_最终方案验证.py 的几何函数和 World 仿真，
+不连接模拟器。参数未调优。运行：python 方案二_调度改进原型.py（约数分钟）。
 """
 import math, random, copy, importlib.util, pickle, sys
 from pathlib import Path
-_BASE=Path(__file__).resolve().parents[1]/'baseline'/'最终方案验证.py'   # 复用交接脚本中的几何函数与 World 仿真
+_BASE=Path(__file__).resolve().parents[1]/'baseline'/'方案一_最终方案验证.py'   # 复用交接脚本中的几何函数与 World 仿真
 spec=importlib.util.spec_from_file_location('jqx',str(_BASE)); J=importlib.util.module_from_spec(spec); spec.loader.exec_module(J)
 dist=J.dist; DELTA=J.DELTA
 
@@ -237,4 +238,4 @@ if __name__=='__main__':
             w1=J.World(copy.deepcopy(s),i); J.solve(w1,mixed); a.append(w1.time/len(s))
             w2=J.World(copy.deepcopy(s),i); solve_v2(w2,mixed,QQ); b.append(w2.time/len(s))
         n=len(C)
-        print('%s 每源平均：交接版 %.0f s，原型 %.0f s（-%.0f%%），原型更快 %d/%d 局'%(label,sum(a)/n,sum(b)/n,100*(1-sum(b)/sum(a)),sum(y<x for x,y in zip(a,b)),n))
+        print('%s 每源平均：方案一 %.0f s，方案二 %.0f s（-%.0f%%），方案二更快 %d/%d 局'%(label,sum(a)/n,sum(b)/n,100*(1-sum(b)/sum(a)),sum(y<x for x,y in zip(a,b)),n))
