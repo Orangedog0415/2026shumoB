@@ -1,0 +1,1087 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>方案三优化图解</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#f2f4f5; --panel:#fbfcfc; --ink:#14202a; --ink-2:#44515c; --muted:#6b7883; --rule:#d4dbe0; --rule-2:#e6ebee;
+  --accent:#0c6a77; --accent-soft:#dcecee;
+  --good:#1b7a3d; --good-bg:#e2f1e7; --warn:#935800; --warn-bg:#f8ecd6; --bad:#b0271f; --bad-bg:#f8e1df;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --q5:#184f95; --q4:#2a78d6; --q3:#5598e7; --q2:#9ec5f4; --q1:#cde2fb; --unsafe:#e9ecee;
+  --wedge:rgba(12,106,119,.16);
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10161b; --panel:#161f26; --ink:#e4eaee; --ink-2:#b3bfc7; --muted:#8997a2; --rule:#2b3741; --rule-2:#212b33;
+    --accent:#52b6c2; --accent-soft:#16343a;
+    --good:#5fc383; --good-bg:#15301f; --warn:#e3a547; --warn-bg:#33260f; --bad:#f0736a; --bad-bg:#3a1a18;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --q5:#86b6ef; --q4:#5598e7; --q3:#2a78d6; --q2:#1c5cab; --q1:#104281; --unsafe:#1d262d;
+    --wedge:rgba(82,182,194,.18); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --ground:#10161b; --panel:#161f26; --ink:#e4eaee; --ink-2:#b3bfc7; --muted:#8997a2; --rule:#2b3741; --rule-2:#212b33;
+    --accent:#52b6c2; --accent-soft:#16343a;
+    --good:#5fc383; --good-bg:#15301f; --warn:#e3a547; --warn-bg:#33260f; --bad:#f0736a; --bad-bg:#3a1a18;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --q5:#86b6ef; --q4:#5598e7; --q3:#2a78d6; --q2:#1c5cab; --q1:#104281; --unsafe:#1d262d;
+    --wedge:rgba(82,182,194,.18); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:16px/1.75 var(--sans);margin:0;padding-block:40px 72px;padding-inline:20px}
+.wrap{max-width:1000px;margin:0 auto}
+.prose{max-width:720px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:2.35rem;letter-spacing:.01em}
+h2{font-size:1.7rem}
+h3{font-size:1.1rem;font-family:var(--sans);font-weight:700}
+p{margin:0}
+.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.lede{color:var(--ink-2);font-size:1.05rem;margin-top:14px}
+.meta{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:.85rem}
+header{display:grid;gap:4px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
+nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:18px;font-size:.9rem}
+nav a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover,nav a:focus-visible{border-bottom-color:var(--accent);outline:none}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{padding-block:44px;border-bottom:1px solid var(--rule);display:grid;gap:22px}
+.sec-head{display:grid;gap:6px}
+.block{display:grid;gap:10px}
+.block-label{font-size:.78rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+blockquote{margin:0;padding:14px 18px;background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;color:var(--ink-2);font-family:var(--serif);font-size:1rem;line-height:1.85}
+blockquote .src{display:block;margin-top:6px;font-family:var(--sans);font-size:.78rem;color:var(--muted)}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px}
+ol.steps li::marker{font-family:var(--mono);color:var(--accent)}
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.fig{display:grid;gap:10px;margin:0}
+.fig-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.fig-svg{width:100%;height:auto;display:block;max-width:100%}
+figcaption{font-size:.85rem;color:var(--muted);max-width:720px}
+.panel{background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;padding:10px}
+.panel-title{font-size:.8rem;color:var(--ink-2);margin:0 0 6px 2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--rule-2);border:1px solid var(--rule-2);border-radius:4px;overflow:hidden}
+.stat{background:var(--panel);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.stat .v{font-family:var(--mono);font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat .k{font-size:.8rem;color:var(--muted);line-height:1.5}
+.verdict{display:grid;gap:12px}
+.vrow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.04em;line-height:1.7}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.good{color:var(--good);background:var(--good-bg)} .warn{color:var(--warn);background:var(--warn-bg)} .bad{color:var(--bad);background:var(--bad-bg)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule-2);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+th{font-size:.78rem;letter-spacing:.08em;color:var(--muted);font-weight:700;background:var(--panel)}
+tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--ink-2);align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+.sw.line{height:3px;width:18px;border-radius:2px;vertical-align:3px}
+.callout{border-left:3px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink-2)}
+/* svg */
+.plot-bg{fill:var(--panel)}
+.grid{stroke:var(--rule-2);stroke-width:1}
+.tick{fill:var(--muted);font:11px var(--mono)}
+.lbl{fill:var(--ink);font:12px var(--sans);font-weight:500}
+.lbl-bad{fill:var(--bad)}
+.station{fill:var(--ink)}
+.wedge{fill:var(--wedge);stroke:var(--accent);stroke-width:.8}
+.zoombox{fill:none;stroke:var(--bad);stroke-width:1.2}
+.edge{stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3;fill:none}
+.region{fill:var(--wedge);stroke:var(--accent);stroke-width:2}
+.dcircle{fill:none;stroke:var(--ink-2);stroke-width:1.5}
+.diam{stroke:var(--ink);stroke-width:2}
+.mid{fill:var(--ink)}
+.farline{stroke:var(--bad);stroke-width:1.2;stroke-dasharray:3 3}
+.farpt{fill:var(--bad);stroke:var(--panel);stroke-width:2}
+.scale{stroke:var(--ink-2);stroke-width:2}
+.unsafe{fill:var(--unsafe)}
+.cell{stroke:none}
+.cell.b1{fill:var(--q1)} .cell.b2{fill:var(--q2)} .cell.b3{fill:var(--q3)} .cell.b4{fill:var(--q4)} .cell.b5{fill:var(--q5)}
+.cell.sel{stroke:var(--s2);stroke-width:2}
+.cell:hover,.unsafe:hover{stroke:var(--ink);stroke-width:2}
+.wedgeline{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-dasharray:5 3}
+.pick{fill:var(--s2);stroke:var(--panel);stroke-width:2}
+.disk{fill:none;stroke:var(--ink-2);stroke-width:1.3}
+.cov{fill:var(--wedge);stroke:none;opacity:.55}
+.path{stroke-width:1.6;stroke-linecap:round;fill:none}
+.ph-scan{stroke:var(--s1)} .ph-fast{stroke:var(--s2)} .ph-fallback{stroke:var(--s3);stroke-width:3}
+.netpt{fill:var(--panel);stroke:var(--ink);stroke-width:1.5}
+.src{fill:var(--panel);stroke:var(--ink);stroke-width:1.8}
+.src-d{fill:var(--ink)}
+.dirarrow{stroke:var(--ink-2);stroke-width:1.2}
+.arrowhead{fill:var(--ink-2)}
+.origin{fill:var(--bad)}
+/* bars */
+.bars{display:grid;gap:14px}
+.bar-row{display:grid;grid-template-columns:4.5em 1fr;gap:12px;align-items:center}
+.bar-name{font-weight:700;font-size:.9rem}
+.bar{display:flex;gap:2px;height:26px}
+.seg{height:100%;min-width:3px}
+.seg:first-child{border-radius:4px 0 0 4px}.seg:last-child{border-radius:0 4px 4px 0}
+.seg.m{background:var(--s1)} .seg.d{background:var(--s2)} .seg.w{background:var(--s3)} .seg.c{background:var(--s4)}
+.bar-total{font-family:var(--mono);font-size:.82rem;color:var(--ink-2);margin-top:4px}
+footer{padding-top:28px;color:var(--muted);font-size:.85rem;display:grid;gap:6px}
+@media (max-width:560px){h1{font-size:1.8rem}h2{font-size:1.4rem}.vrow{grid-template-columns:1fr}}
+
+.ph-go{stroke:var(--s2)} .ph-final{stroke:var(--s3)} .ph-fallback{stroke:var(--s4);stroke-width:3.2}
+.ph-scan{stroke:var(--s1)}
+.axis{stroke:var(--rule);stroke-width:1}
+.dot{stroke:var(--panel);stroke-width:1.5}
+.dot.n10{fill:var(--s1)} .dot.n13{fill:var(--s2)} .dot.n16{fill:var(--s3)}
+.diag{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.line150{fill:none;stroke:var(--s1);stroke-width:2}
+.lineinf{fill:none;stroke:var(--s2);stroke-width:2}
+.pt150{fill:var(--s1);stroke:var(--panel);stroke-width:2} .ptinf{fill:var(--s2);stroke:var(--panel);stroke-width:2}
+.baseline{stroke:var(--bad);stroke-width:1.2;stroke-dasharray:5 4}
+.lbl-muted{fill:var(--muted);font:11px var(--sans)}
+.ell1{fill:var(--wedge);stroke:var(--s2);stroke-width:1.5}
+.ell2{fill:none;stroke:var(--s2);stroke-width:1.2;stroke-dasharray:5 4}
+.route{stroke:var(--s1);stroke-width:2.2}
+.det{stroke:var(--s2);stroke-width:2;fill:none}
+.src-ok{fill:var(--good)} .src-wait{fill:var(--panel);stroke:var(--ink);stroke-width:1.8} .src-far{fill:var(--ink)}
+.region-big{fill:none;stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:3 3}
+.wf-bar{fill:var(--s1)} .wf-base{fill:var(--muted)} .wf-final{fill:var(--good)}
+.hbar{fill:var(--s1)} .hbar.sel{fill:var(--good)}
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.bigstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.big{background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;padding:16px 18px;display:grid;gap:4px}
+.big .q{font-size:.8rem;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.big .v{font-family:var(--mono);font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.big .v small{font-size:1rem;color:var(--muted)}
+.big .d{font-family:var(--mono);color:var(--good);font-weight:500}
+.big .k{font-size:.82rem;color:var(--muted)}
+</style>
+<div class="wrap">
+<header>
+  <div class="eyebrow">2026 国赛 · B题 · 问题三、四</div>
+  <h1>方案三：少走回头路</h1>
+  <p class="lede prose">方案三 = 每个覆盖点扫完再走 + 顺路清除（参数 x、r_ok）+ 覆盖完成后集中清除 + 覆盖点顺带补测 + 更短的覆盖网。下面用同一批案例，把它和交接版（方案一）的路线、时间逐项对比。</p>
+  <div class="meta"><span>问题三、四各 30 局（N=10/13/16 各 10 局），同一批源、同一误差场</span><span>本地仿真，不是官方成绩</span><span>2026-09-11</span></div>
+  <nav aria-label="页内导航"><a href="#result">结果</a><a href="#rule">顺路规则</a><a href="#route3">路线：问题三</a><a href="#route4">路线：问题四</a><a href="#where">省在哪里</a><a href="#param">参数</a><a href="#caveat">要注意</a></nav>
+</header>
+
+<section id="result">
+  <div class="sec-head"><div class="eyebrow">结果</div><h2>每个源平均少花约四分之一的时间，而且照样全部清除</h2></div>
+  <div class="bigstat">
+    <div class="big"><span class="q">问题三 · 每源平均</span><span class="v">451 → 336<small> s</small></span><span class="d">−26%</span><span class="k">30 局里 30 局更快；单局平均 95 → 71 分钟</span></div>
+    <div class="big"><span class="q">问题四 · 每源平均</span><span class="v">977 → 745<small> s</small></span><span class="d">−24%</span><span class="k">30 局里 22 局更快；单局平均 197 → 156 分钟</span></div>
+    <div class="big"><span class="q">全部清除</span><span class="v">60 / 60</span><span class="d">覆盖证书与兜底不变</span><span class="k">方案三只改调度和补测，保证层与方案一共用</span></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>每源平均时间</th><th class="n">N=10</th><th class="n">N=13</th><th class="n">N=16</th></tr></thead>
+    <tbody>
+      <tr><td>问题三 方案一 → 方案三</td><td class="n">524 → 395</td><td class="n">455 → 335</td><td class="n">373 → 277</td></tr>
+      <tr><td>问题四 方案一 → 方案三</td><td class="n">1363 → 919</td><td class="n">1071 → 727</td><td class="n" style="color:var(--bad)">498 → 590</td></tr>
+    </tbody></table></div>
+  <p class="prose" style="color:var(--ink-2);font-size:.92rem">问题四 N=16 是唯一变慢的一格，原因见<a href="#caveat" style="color:var(--accent)">最后一节</a>。</p>
+</section>
+
+<section id="rule">
+  <div class="sec-head"><div class="eyebrow">核心规则</div><h2>什么时候顺路去清：一个椭圆</h2></div>
+  <p class="prose">机器狗在覆盖点 A，下一站是 B。去清一个源 C 再到 B，比直接去 B 多走 |AC| + |CB| − |AB|。要求这段绕行不超过 x，等价于 C 落在以 A、B 为焦点的椭圆里。x 越大椭圆越胖。第二个条件是 r_ok：源的可能区域够小（半径 ≤ 150 m），去了才不用在现场慢慢找。</p>
+  <figure class="fig"><div class="panel"><svg viewBox="0 0 560 350" class="fig-svg" role="img" aria-label="绕行距离不超过 x 的区域是以两覆盖点为焦点的椭圆">
+<rect x="0" y="0" width="560" height="350" class="plot-bg"/>
+<ellipse cx="240.0" cy="175.0" rx="144.6" ry="120.4" class="ell2"/>
+<ellipse cx="240.0" cy="175.0" rx="112.3" ry="78.8" class="ell1"/>
+<line x1="159.9" y1="175.0" x2="320.1" y2="175.0" class="route"/>
+<polyline points="159.9,175.0 265.8,129.8 320.1,175.0" class="det"/>
+<ellipse cx="214.2" cy="239.5" rx="55.9" ry="12.9" class="region-big" transform="rotate(-25 214.2 239.5)"/>
+<circle cx="265.8" cy="129.8" r="6" class="src-ok"/><text x="275.8" y="123.8" class="lbl" text-anchor="start">区域 ≤ r_ok，在椭圆内：顺路去清</text>
+<circle cx="214.2" cy="239.5" r="6" class="src-wait"/><text x="226.2" y="244.5" class="lbl" text-anchor="start">在椭圆内但区域还大：等更多方位</text>
+<circle cx="330.3" cy="54.6" r="6" class="src-far"/><text x="340.3" y="58.6" class="lbl" text-anchor="start">在椭圆外：覆盖完成后集中清</text>
+<circle cx="159.9" cy="175.0" r="5" class="station"/><text x="151.9" y="179.0" class="lbl" text-anchor="end">当前覆盖点 A</text>
+<circle cx="320.1" cy="175.0" r="5" class="station"/><text x="328.1" y="179.0" class="lbl">下一覆盖点 B</text>
+<text x="240.0" y="269.8" class="lbl-muted" text-anchor="middle">x = 300 m</text>
+<text x="240.0" y="311.4" class="lbl-muted" text-anchor="middle">x = 600 m</text>
+<text x="240.0" y="167.0" class="lbl-muted" text-anchor="middle">相邻覆盖点间距 745 m</text>
+</svg></div>
+  <figcaption>相邻覆盖点间距取正八边形（半径 974 m）的边长 745 m。实心绿点会被顺路清掉；空心点虽在椭圆内，但区域还大（虚线），先在后面的覆盖点补测方位；黑点在椭圆外，等覆盖完成后按最近顺序集中清除。</figcaption></figure>
+</section>
+
+<section id="route3">
+  <div class="sec-head"><div class="eyebrow">路线对比 · 问题三</div><h2>同一局：从“一趟一趟跑”变成“一圈扫完再收”</h2></div>
+  <div class="legend"><span><i class="sw line" style="background:var(--s1)"></i>覆盖巡回</span><span><i class="sw line" style="background:var(--s2)"></i>去清源（方案一：发现即去；方案三：顺路清除）</span><span><i class="sw line" style="background:var(--s3)"></i>覆盖完成后集中清除</span><span><i class="sw line" style="background:var(--s4);height:5px"></i>兜底逐格清除</span><span><i class="sw" style="background:var(--panel);border:1.5px solid var(--ink)"></i>覆盖点</span><span><i class="sw" style="background:var(--panel);border:1.8px solid var(--ink);border-radius:50%"></i>干扰源</span></div>
+  <figure class="fig"><div class="cmp-grid"><div class="panel"><p class="panel-title"><b>方案一（交接版）</b> · 总 5829 s（每源 448 s）· 164 个动作 · 走了 24.8 km</p><svg viewBox="0 0 460 460" class="fig-svg" role="img" aria-label="方案一（交接版）">
+<defs><marker id="ar-q3-s1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs>
+<rect x="0" y="0" width="460" height="460" class="plot-bg"/>
+<circle cx="230.0" cy="230.0" r="107.3" class="cov"/>
+<circle cx="358.8" cy="230.0" r="107.3" class="cov"/>
+<circle cx="294.4" cy="118.5" r="107.3" class="cov"/>
+<circle cx="165.6" cy="118.5" r="107.3" class="cov"/>
+<circle cx="101.2" cy="230.0" r="107.3" class="cov"/>
+<circle cx="165.6" cy="341.5" r="107.3" class="cov"/>
+<circle cx="294.4" cy="341.5" r="107.3" class="cov"/>
+<circle cx="230.0" cy="230.0" r="193.2" class="disk"/>
+<line x1="230.0" y1="230.0" x2="211.0" y2="153.9" class="path ph-go"/>
+<line x1="211.0" y1="153.9" x2="211.4" y2="155.0" class="path ph-go"/>
+<line x1="211.4" y1="155.0" x2="211.3" y2="154.9" class="path ph-go"/>
+<line x1="211.3" y1="154.9" x2="199.9" y2="143.5" class="path ph-go"/>
+<line x1="199.9" y1="143.5" x2="190.3" y2="136.1" class="path ph-fallback"/>
+<line x1="190.3" y1="136.1" x2="192.3" y2="135.3" class="path ph-fallback"/>
+<line x1="192.3" y1="135.3" x2="191.4" y2="133.3" class="path ph-fallback"/>
+<line x1="191.4" y1="133.3" x2="189.5" y2="134.1" class="path ph-fallback"/>
+<line x1="189.5" y1="134.1" x2="165.6" y2="118.5" class="path ph-scan"/>
+<line x1="165.6" y1="118.5" x2="135.1" y2="119.1" class="path ph-go"/>
+<line x1="135.1" y1="119.1" x2="133.5" y2="120.1" class="path ph-go"/>
+<line x1="133.5" y1="120.1" x2="121.2" y2="120.4" class="path ph-go"/>
+<line x1="121.2" y1="120.4" x2="117.6" y2="120.5" class="path ph-go"/>
+<line x1="117.6" y1="120.5" x2="106.6" y2="119.0" class="path ph-fallback"/>
+<line x1="106.6" y1="119.0" x2="165.6" y2="118.5" class="path ph-scan"/>
+<line x1="165.6" y1="118.5" x2="188.1" y2="191.2" class="path ph-go"/>
+<line x1="188.1" y1="191.2" x2="194.4" y2="223.4" class="path ph-go"/>
+<line x1="194.4" y1="223.4" x2="194.4" y2="224.4" class="path ph-go"/>
+<line x1="194.4" y1="224.4" x2="194.4" y2="224.0" class="path ph-go"/>
+<line x1="194.4" y1="224.0" x2="194.5" y2="242.9" class="path ph-fallback"/>
+<line x1="194.5" y1="242.9" x2="192.8" y2="245.4" class="path ph-fallback"/>
+<line x1="192.8" y1="245.4" x2="194.9" y2="245.0" class="path ph-fallback"/>
+<line x1="194.9" y1="245.0" x2="195.4" y2="247.1" class="path ph-fallback"/>
+<line x1="195.4" y1="247.1" x2="230.0" y2="230.0" class="path ph-scan"/>
+<line x1="230.0" y1="230.0" x2="311.5" y2="268.3" class="path ph-go"/>
+<line x1="311.5" y1="268.3" x2="311.0" y2="272.2" class="path ph-go"/>
+<line x1="311.0" y1="272.2" x2="323.9" y2="285.8" class="path ph-go"/>
+<line x1="323.9" y1="285.8" x2="294.4" y2="341.5" class="path ph-scan"/>
+<line x1="294.4" y1="341.5" x2="237.2" y2="367.8" class="path ph-go"/>
+<line x1="237.2" y1="367.8" x2="219.8" y2="378.7" class="path ph-go"/>
+<line x1="219.8" y1="378.7" x2="222.3" y2="377.0" class="path ph-go"/>
+<line x1="222.3" y1="377.0" x2="222.5" y2="376.8" class="path ph-go"/>
+<line x1="222.5" y1="376.8" x2="206.4" y2="393.0" class="path ph-fallback"/>
+<line x1="206.4" y1="393.0" x2="204.5" y2="394.1" class="path ph-fallback"/>
+<line x1="204.5" y1="394.1" x2="203.8" y2="397.1" class="path ph-fallback"/>
+<line x1="203.8" y1="397.1" x2="202.7" y2="395.2" class="path ph-fallback"/>
+<line x1="202.7" y1="395.2" x2="200.9" y2="396.4" class="path ph-fallback"/>
+<line x1="200.9" y1="396.4" x2="202.0" y2="398.2" class="path ph-fallback"/>
+<line x1="202.0" y1="398.2" x2="200.2" y2="399.3" class="path ph-fallback"/>
+<line x1="200.2" y1="399.3" x2="198.3" y2="400.4" class="path ph-fallback"/>
+<line x1="198.3" y1="400.4" x2="199.5" y2="402.3" class="path ph-fallback"/>
+<line x1="199.5" y1="402.3" x2="197.6" y2="403.4" class="path ph-fallback"/>
+<line x1="197.6" y1="403.4" x2="165.6" y2="341.5" class="path ph-scan"/>
+<line x1="165.6" y1="341.5" x2="233.7" y2="379.8" class="path ph-go"/>
+<line x1="233.7" y1="379.8" x2="227.9" y2="365.3" class="path ph-go"/>
+<line x1="227.9" y1="365.3" x2="165.6" y2="341.5" class="path ph-scan"/>
+<line x1="165.6" y1="341.5" x2="232.9" y2="364.3" class="path ph-go"/>
+<line x1="232.9" y1="364.3" x2="263.3" y2="380.2" class="path ph-go"/>
+<line x1="263.3" y1="380.2" x2="267.8" y2="386.6" class="path ph-go"/>
+<line x1="267.8" y1="386.6" x2="268.1" y2="387.1" class="path ph-go"/>
+<line x1="268.1" y1="387.1" x2="276.7" y2="395.3" class="path ph-fallback"/>
+<line x1="276.7" y1="395.3" x2="294.4" y2="341.5" class="path ph-scan"/>
+<line x1="294.4" y1="341.5" x2="327.3" y2="337.3" class="path ph-go"/>
+<line x1="327.3" y1="337.3" x2="345.3" y2="335.5" class="path ph-go"/>
+<line x1="345.3" y1="335.5" x2="350.3" y2="336.4" class="path ph-go"/>
+<line x1="350.3" y1="336.4" x2="353.3" y2="336.4" class="path ph-go"/>
+<line x1="353.3" y1="336.4" x2="359.7" y2="337.3" class="path ph-fallback"/>
+<line x1="359.7" y1="337.3" x2="361.9" y2="337.2" class="path ph-fallback"/>
+<line x1="361.9" y1="337.2" x2="364.0" y2="337.0" class="path ph-fallback"/>
+<line x1="364.0" y1="337.0" x2="366.1" y2="336.9" class="path ph-fallback"/>
+<line x1="366.1" y1="336.9" x2="368.3" y2="336.7" class="path ph-fallback"/>
+<line x1="368.3" y1="336.7" x2="370.4" y2="336.6" class="path ph-fallback"/>
+<line x1="370.4" y1="336.6" x2="294.4" y2="341.5" class="path ph-scan"/>
+<line x1="294.4" y1="341.5" x2="230.0" y2="230.0" class="path ph-scan"/>
+<line x1="230.0" y1="230.0" x2="157.9" y2="202.7" class="path ph-go"/>
+<line x1="157.9" y1="202.7" x2="164.5" y2="206.1" class="path ph-go"/>
+<line x1="164.5" y1="206.1" x2="164.6" y2="206.4" class="path ph-go"/>
+<line x1="164.6" y1="206.4" x2="164.9" y2="206.7" class="path ph-go"/>
+<line x1="164.9" y1="206.7" x2="145.5" y2="185.4" class="path ph-fallback"/>
+<line x1="145.5" y1="185.4" x2="101.2" y2="230.0" class="path ph-scan"/>
+<line x1="101.2" y1="230.0" x2="133.2" y2="159.7" class="path ph-go"/>
+<line x1="133.2" y1="159.7" x2="135.1" y2="153.0" class="path ph-go"/>
+<line x1="135.1" y1="153.0" x2="134.7" y2="154.8" class="path ph-go"/>
+<line x1="134.7" y1="154.8" x2="134.6" y2="155.5" class="path ph-go"/>
+<line x1="134.6" y1="155.5" x2="134.9" y2="129.2" class="path ph-fallback"/>
+<line x1="134.9" y1="129.2" x2="165.6" y2="118.5" class="path ph-scan"/>
+<line x1="165.6" y1="118.5" x2="161.7" y2="107.2" class="path ph-go"/>
+<line x1="161.7" y1="107.2" x2="155.7" y2="100.1" class="path ph-go"/>
+<line x1="155.7" y1="100.1" x2="158.5" y2="103.5" class="path ph-go"/>
+<line x1="158.5" y1="103.5" x2="158.8" y2="103.8" class="path ph-go"/>
+<line x1="158.8" y1="103.8" x2="141.1" y2="87.2" class="path ph-fallback"/>
+<line x1="141.1" y1="87.2" x2="139.8" y2="85.5" class="path ph-fallback"/>
+<line x1="139.8" y1="85.5" x2="165.6" y2="118.5" class="path ph-scan"/>
+<line x1="165.6" y1="118.5" x2="294.4" y2="118.5" class="path ph-scan"/>
+<line x1="294.4" y1="118.5" x2="333.6" y2="133.5" class="path ph-go"/>
+<line x1="333.6" y1="133.5" x2="355.5" y2="137.7" class="path ph-go"/>
+<line x1="355.5" y1="137.7" x2="351.9" y2="137.0" class="path ph-go"/>
+<line x1="351.9" y1="137.0" x2="351.5" y2="137.0" class="path ph-go"/>
+<line x1="351.5" y1="137.0" x2="374.8" y2="137.6" class="path ph-fallback"/>
+<line x1="374.8" y1="137.6" x2="294.4" y2="118.5" class="path ph-scan"/>
+<line x1="294.4" y1="118.5" x2="336.9" y2="140.2" class="path ph-go"/>
+<line x1="336.9" y1="140.2" x2="352.4" y2="135.3" class="path ph-go"/>
+<line x1="352.4" y1="135.3" x2="294.4" y2="118.5" class="path ph-scan"/>
+<line x1="294.4" y1="118.5" x2="358.8" y2="230.0" class="path ph-scan"/>
+<line x1="358.8" y1="230.0" x2="101.2" y2="230.0" class="path ph-scan"/>
+<rect x="226.5" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="355.3" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="290.9" y="115.0" width="7" height="7" class="netpt"/>
+<rect x="162.1" y="115.0" width="7" height="7" class="netpt"/>
+<rect x="97.7" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="162.1" y="338.0" width="7" height="7" class="netpt"/>
+<rect x="290.9" y="338.0" width="7" height="7" class="netpt"/>
+<circle cx="375.7" cy="137.1" r="4.2" class="src "/>
+<circle cx="106.5" cy="120.1" r="4.2" class="src "/>
+<circle cx="278.0" cy="396.8" r="4.2" class="src "/>
+<circle cx="144.8" cy="186.5" r="4.2" class="src "/>
+<circle cx="139.6" cy="84.9" r="4.2" class="src "/>
+<circle cx="353.5" cy="134.6" r="4.2" class="src "/>
+<circle cx="196.3" cy="403.2" r="4.2" class="src "/>
+<circle cx="370.4" cy="336.4" r="4.2" class="src "/>
+<circle cx="134.3" cy="128.6" r="4.2" class="src "/>
+<circle cx="194.1" cy="248.3" r="4.2" class="src "/>
+<circle cx="188.9" cy="132.8" r="4.2" class="src "/>
+<circle cx="228.7" cy="366.7" r="4.2" class="src "/>
+<circle cx="324.7" cy="286.5" r="4.2" class="src "/>
+<circle cx="230.0" cy="230.0" r="3" class="origin"/>
+<line x1="22.9" y1="433.9" x2="130.2" y2="433.9" class="scale"/><text x="22.9" y="426.9" class="tick">1000 m</text>
+</svg><p class="panel-title" style="margin-top:6px">覆盖巡回 12.9 km；发现即去 9.8 km；兜底逐格 2.2 km</p></div><div class="panel"><p class="panel-title"><b>方案三（优化后）</b> · 总 4364 s（每源 336 s）· 137 个动作 · 走了 17.9 km</p><svg viewBox="0 0 460 460" class="fig-svg" role="img" aria-label="方案三（优化后）">
+<defs><marker id="ar-q3-s3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs>
+<rect x="0" y="0" width="460" height="460" class="plot-bg"/>
+<circle cx="334.5" cy="230.0" r="107.3" class="cov"/>
+<circle cx="303.9" cy="156.1" r="107.3" class="cov"/>
+<circle cx="230.0" cy="125.5" r="107.3" class="cov"/>
+<circle cx="156.1" cy="156.1" r="107.3" class="cov"/>
+<circle cx="125.5" cy="230.0" r="107.3" class="cov"/>
+<circle cx="156.1" cy="303.9" r="107.3" class="cov"/>
+<circle cx="230.0" cy="334.5" r="107.3" class="cov"/>
+<circle cx="303.9" cy="303.9" r="107.3" class="cov"/>
+<circle cx="230.0" cy="230.0" r="193.2" class="disk"/>
+<line x1="230.0" y1="230.0" x2="334.5" y2="230.0" class="path ph-scan"/>
+<line x1="334.5" y1="230.0" x2="303.9" y2="156.1" class="path ph-scan"/>
+<line x1="303.9" y1="156.1" x2="230.0" y2="125.5" class="path ph-scan"/>
+<line x1="230.0" y1="125.5" x2="203.6" y2="94.6" class="path ph-go"/>
+<line x1="203.6" y1="94.6" x2="189.0" y2="133.5" class="path ph-go"/>
+<line x1="189.0" y1="133.5" x2="156.1" y2="156.1" class="path ph-scan"/>
+<line x1="156.1" y1="156.1" x2="137.0" y2="130.9" class="path ph-go"/>
+<line x1="137.0" y1="130.9" x2="134.6" y2="129.0" class="path ph-go"/>
+<line x1="134.6" y1="129.0" x2="129.4" y2="105.3" class="path ph-go"/>
+<line x1="129.4" y1="105.3" x2="105.7" y2="120.3" class="path ph-go"/>
+<line x1="105.7" y1="120.3" x2="125.5" y2="230.0" class="path ph-scan"/>
+<line x1="125.5" y1="230.0" x2="127.0" y2="225.4" class="path ph-go"/>
+<line x1="127.0" y1="225.4" x2="193.7" y2="248.0" class="path ph-go"/>
+<line x1="193.7" y1="248.0" x2="156.1" y2="303.9" class="path ph-scan"/>
+<line x1="156.1" y1="303.9" x2="230.0" y2="334.5" class="path ph-scan"/>
+<line x1="230.0" y1="334.5" x2="323.2" y2="290.9" class="path ph-go"/>
+<line x1="323.2" y1="290.9" x2="324.7" y2="288.2" class="path ph-go"/>
+<line x1="324.7" y1="288.2" x2="303.9" y2="303.9" class="path ph-scan"/>
+<line x1="303.9" y1="303.9" x2="302.9" y2="365.0" class="path ph-final"/>
+<line x1="302.9" y1="365.0" x2="370.2" y2="337.2" class="path ph-final"/>
+<line x1="370.2" y1="337.2" x2="342.4" y2="356.4" class="path ph-final"/>
+<line x1="342.4" y1="356.4" x2="277.8" y2="397.1" class="path ph-final"/>
+<line x1="277.8" y1="397.1" x2="228.5" y2="370.4" class="path ph-final"/>
+<line x1="228.5" y1="370.4" x2="228.5" y2="367.4" class="path ph-final"/>
+<line x1="228.5" y1="367.4" x2="242.3" y2="387.4" class="path ph-final"/>
+<line x1="242.3" y1="387.4" x2="198.3" y2="401.7" class="path ph-final"/>
+<line x1="198.3" y1="401.7" x2="196.3" y2="403.8" class="path ph-final"/>
+<line x1="196.3" y1="403.8" x2="144.5" y2="187.9" class="path ph-final"/>
+<line x1="144.5" y1="187.9" x2="103.4" y2="150.4" class="path ph-final"/>
+<line x1="103.4" y1="150.4" x2="139.7" y2="83.6" class="path ph-final"/>
+<line x1="139.7" y1="83.6" x2="350.3" y2="135.5" class="path ph-final"/>
+<line x1="350.3" y1="135.5" x2="352.8" y2="133.8" class="path ph-final"/>
+<line x1="352.8" y1="133.8" x2="353.9" y2="129.8" class="path ph-final"/>
+<line x1="353.9" y1="129.8" x2="375.4" y2="137.8" class="path ph-final"/>
+<rect x="331.0" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="300.4" y="152.6" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="122.0" width="7" height="7" class="netpt"/>
+<rect x="152.6" y="152.6" width="7" height="7" class="netpt"/>
+<rect x="122.0" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="152.6" y="300.4" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="331.0" width="7" height="7" class="netpt"/>
+<rect x="300.4" y="300.4" width="7" height="7" class="netpt"/>
+<circle cx="375.7" cy="137.1" r="4.2" class="src "/>
+<circle cx="106.5" cy="120.1" r="4.2" class="src "/>
+<circle cx="278.0" cy="396.8" r="4.2" class="src "/>
+<circle cx="144.8" cy="186.5" r="4.2" class="src "/>
+<circle cx="139.6" cy="84.9" r="4.2" class="src "/>
+<circle cx="353.5" cy="134.6" r="4.2" class="src "/>
+<circle cx="196.3" cy="403.2" r="4.2" class="src "/>
+<circle cx="370.4" cy="336.4" r="4.2" class="src "/>
+<circle cx="134.3" cy="128.6" r="4.2" class="src "/>
+<circle cx="194.1" cy="248.3" r="4.2" class="src "/>
+<circle cx="188.9" cy="132.8" r="4.2" class="src "/>
+<circle cx="228.7" cy="366.7" r="4.2" class="src "/>
+<circle cx="324.7" cy="286.5" r="4.2" class="src "/>
+<circle cx="230.0" cy="230.0" r="3" class="origin"/>
+<line x1="22.9" y1="433.9" x2="130.2" y2="433.9" class="scale"/><text x="22.9" y="426.9" class="tick">1000 m</text>
+</svg><p class="panel-title" style="margin-top:6px">覆盖巡回 5.5 km；顺路清除 3.3 km；覆盖后集中清除 9.1 km</p></div></div>
+  <figcaption>示例局：13 个全向源（N=13 中节省幅度居中的一局）。方案一从覆盖点一根根射出橙线再折回；方案三绕正八边形走一圈，把所有频道扫完，沿途用多个覆盖点的方位把源定准，最后一次性收掉。</figcaption></figure>
+</section>
+
+<section id="route4">
+  <div class="sec-head"><div class="eyebrow">路线对比 · 问题四</div><h2>格网变稀，巡回路程缩短</h2></div>
+  <figure class="fig"><div class="cmp-grid"><div class="panel"><p class="panel-title"><b>方案一（37 点格网）</b> · 总 14186 s（每源 1091 s）· 507 个动作 · 走了 57.6 km</p><svg viewBox="0 0 460 460" class="fig-svg" role="img" aria-label="方案一（37 点格网）">
+<defs><marker id="ar-q4-s1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs>
+<rect x="0" y="0" width="460" height="460" class="plot-bg"/>
+<circle cx="230.0" cy="230.0" r="134.2" class="disk"/>
+<line x1="230.0" y1="230.0" x2="283.0" y2="242.8" class="path ph-go"/>
+<line x1="283.0" y1="242.8" x2="290.9" y2="250.7" class="path ph-go"/>
+<line x1="290.9" y1="250.7" x2="295.7" y2="255.5" class="path ph-go"/>
+<line x1="295.7" y1="255.5" x2="294.4" y2="258.6" class="path ph-go"/>
+<line x1="294.4" y1="258.6" x2="295.7" y2="257.3" class="path ph-go"/>
+<line x1="295.7" y1="257.3" x2="297.1" y2="230.0" class="path ph-scan"/>
+<line x1="297.1" y1="230.0" x2="236.6" y2="216.9" class="path ph-go"/>
+<line x1="236.6" y1="216.9" x2="232.4" y2="217.7" class="path ph-go"/>
+<line x1="232.4" y1="217.7" x2="233.7" y2="217.6" class="path ph-go"/>
+<line x1="233.7" y1="217.6" x2="234.2" y2="217.6" class="path ph-go"/>
+<line x1="234.2" y1="217.6" x2="227.4" y2="217.1" class="path ph-fallback"/>
+<line x1="227.4" y1="217.1" x2="226.0" y2="216.9" class="path ph-fallback"/>
+<line x1="226.0" y1="216.9" x2="225.7" y2="218.3" class="path ph-fallback"/>
+<line x1="225.7" y1="218.3" x2="230.0" y2="230.0" class="path ph-scan"/>
+<line x1="230.0" y1="230.0" x2="202.8" y2="184.8" class="path ph-go"/>
+<line x1="202.8" y1="184.8" x2="185.3" y2="157.1" class="path ph-go"/>
+<line x1="185.3" y1="157.1" x2="177.3" y2="149.2" class="path ph-go"/>
+<line x1="177.3" y1="149.2" x2="175.7" y2="147.1" class="path ph-go"/>
+<line x1="175.7" y1="147.1" x2="169.8" y2="142.0" class="path ph-fallback"/>
+<line x1="169.8" y1="142.0" x2="168.9" y2="140.8" class="path ph-fallback"/>
+<line x1="168.9" y1="140.8" x2="162.9" y2="113.7" class="path ph-scan"/>
+<line x1="162.9" y1="113.7" x2="142.6" y2="133.6" class="path ph-go"/>
+<line x1="142.6" y1="133.6" x2="140.4" y2="136.6" class="path ph-go"/>
+<line x1="140.4" y1="136.6" x2="139.1" y2="137.9" class="path ph-go"/>
+<line x1="139.1" y1="137.9" x2="140.7" y2="136.3" class="path ph-go"/>
+<line x1="140.7" y1="136.3" x2="134.7" y2="141.5" class="path ph-fallback"/>
+<line x1="134.7" y1="141.5" x2="133.7" y2="142.6" class="path ph-fallback"/>
+<line x1="133.7" y1="142.6" x2="132.6" y2="143.6" class="path ph-fallback"/>
+<line x1="132.6" y1="143.6" x2="131.6" y2="144.7" class="path ph-fallback"/>
+<line x1="131.6" y1="144.7" x2="130.5" y2="145.7" class="path ph-fallback"/>
+<line x1="130.5" y1="145.7" x2="131.5" y2="146.8" class="path ph-fallback"/>
+<line x1="131.5" y1="146.8" x2="130.5" y2="147.8" class="path ph-fallback"/>
+<line x1="130.5" y1="147.8" x2="129.4" y2="146.7" class="path ph-fallback"/>
+<line x1="129.4" y1="146.7" x2="128.4" y2="147.8" class="path ph-fallback"/>
+<line x1="128.4" y1="147.8" x2="129.4" y2="148.9" class="path ph-fallback"/>
+<line x1="129.4" y1="148.9" x2="128.4" y2="149.9" class="path ph-fallback"/>
+<line x1="128.4" y1="149.9" x2="127.3" y2="148.8" class="path ph-fallback"/>
+<line x1="127.3" y1="148.8" x2="126.3" y2="149.9" class="path ph-fallback"/>
+<line x1="126.3" y1="149.9" x2="127.3" y2="151.0" class="path ph-fallback"/>
+<line x1="127.3" y1="151.0" x2="126.2" y2="152.0" class="path ph-fallback"/>
+<line x1="126.2" y1="152.0" x2="125.2" y2="150.9" class="path ph-fallback"/>
+<line x1="125.2" y1="150.9" x2="124.1" y2="152.0" class="path ph-fallback"/>
+<line x1="124.1" y1="152.0" x2="125.2" y2="153.0" class="path ph-fallback"/>
+<line x1="125.2" y1="153.0" x2="124.1" y2="154.1" class="path ph-fallback"/>
+<line x1="124.1" y1="154.1" x2="123.1" y2="153.0" class="path ph-fallback"/>
+<line x1="123.1" y1="153.0" x2="122.0" y2="154.1" class="path ph-fallback"/>
+<line x1="122.0" y1="154.1" x2="123.1" y2="155.1" class="path ph-fallback"/>
+<line x1="123.1" y1="155.1" x2="122.0" y2="156.2" class="path ph-fallback"/>
+<line x1="122.0" y1="156.2" x2="120.9" y2="155.1" class="path ph-fallback"/>
+<line x1="120.9" y1="155.1" x2="119.9" y2="156.2" class="path ph-fallback"/>
+<line x1="119.9" y1="156.2" x2="120.9" y2="157.2" class="path ph-fallback"/>
+<line x1="120.9" y1="157.2" x2="119.9" y2="158.3" class="path ph-fallback"/>
+<line x1="119.9" y1="158.3" x2="129.3" y2="171.9" class="path ph-scan"/>
+<line x1="129.3" y1="171.9" x2="128.9" y2="174.2" class="path ph-go"/>
+<line x1="128.9" y1="174.2" x2="128.8" y2="171.9" class="path ph-go"/>
+<line x1="128.8" y1="171.9" x2="128.8" y2="171.0" class="path ph-go"/>
+<line x1="128.8" y1="171.0" x2="128.8" y2="170.6" class="path ph-go"/>
+<line x1="128.8" y1="170.6" x2="129.1" y2="162.2" class="path ph-fallback"/>
+<line x1="129.1" y1="162.2" x2="129.1" y2="160.7" class="path ph-fallback"/>
+<line x1="129.1" y1="160.7" x2="129.1" y2="159.2" class="path ph-fallback"/>
+<line x1="129.1" y1="159.2" x2="129.0" y2="157.7" class="path ph-fallback"/>
+<line x1="129.0" y1="157.7" x2="129.0" y2="156.2" class="path ph-fallback"/>
+<line x1="129.0" y1="156.2" x2="129.0" y2="154.7" class="path ph-fallback"/>
+<line x1="129.0" y1="154.7" x2="128.9" y2="153.2" class="path ph-fallback"/>
+<line x1="128.9" y1="153.2" x2="128.9" y2="151.7" class="path ph-fallback"/>
+<line x1="128.9" y1="151.7" x2="128.9" y2="150.3" class="path ph-fallback"/>
+<line x1="128.9" y1="150.3" x2="128.8" y2="148.8" class="path ph-fallback"/>
+<line x1="128.8" y1="148.8" x2="129.3" y2="171.9" class="path ph-scan"/>
+<line x1="129.3" y1="171.9" x2="162.9" y2="230.0" class="path ph-scan"/>
+<line x1="162.9" y1="230.0" x2="210.2" y2="256.7" class="path ph-go"/>
+<line x1="210.2" y1="256.7" x2="205.8" y2="255.0" class="path ph-go"/>
+<line x1="205.8" y1="255.0" x2="217.0" y2="255.0" class="path ph-go"/>
+<line x1="217.0" y1="255.0" x2="217.3" y2="254.9" class="path ph-go"/>
+<line x1="217.3" y1="254.9" x2="224.3" y2="255.1" class="path ph-fallback"/>
+<line x1="224.3" y1="255.1" x2="226.3" y2="254.3" class="path ph-fallback"/>
+<line x1="226.3" y1="254.3" x2="225.7" y2="255.7" class="path ph-fallback"/>
+<line x1="225.7" y1="255.7" x2="227.6" y2="254.8" class="path ph-fallback"/>
+<line x1="227.6" y1="254.8" x2="230.0" y2="230.0" class="path ph-scan"/>
+<line x1="230.0" y1="230.0" x2="196.4" y2="288.1" class="path ph-scan"/>
+<line x1="196.4" y1="288.1" x2="245.7" y2="308.7" class="path ph-go"/>
+<line x1="245.7" y1="308.7" x2="251.7" y2="319.1" class="path ph-go"/>
+<line x1="251.7" y1="319.1" x2="263.6" y2="288.1" class="path ph-scan"/>
+<line x1="263.6" y1="288.1" x2="297.1" y2="230.0" class="path ph-scan"/>
+<line x1="297.1" y1="230.0" x2="263.6" y2="171.9" class="path ph-scan"/>
+<line x1="263.6" y1="171.9" x2="230.0" y2="113.7" class="path ph-scan"/>
+<line x1="230.0" y1="113.7" x2="196.4" y2="171.9" class="path ph-scan"/>
+<line x1="196.4" y1="171.9" x2="162.9" y2="230.0" class="path ph-scan"/>
+<line x1="162.9" y1="230.0" x2="140.0" y2="246.5" class="path ph-go"/>
+<line x1="140.0" y1="246.5" x2="124.3" y2="258.3" class="path ph-go"/>
+<line x1="124.3" y1="258.3" x2="122.0" y2="260.1" class="path ph-go"/>
+<line x1="122.0" y1="260.1" x2="121.4" y2="260.5" class="path ph-go"/>
+<line x1="121.4" y1="260.5" x2="105.4" y2="276.4" class="path ph-go"/>
+<line x1="105.4" y1="276.4" x2="129.3" y2="288.1" class="path ph-scan"/>
+<line x1="129.3" y1="288.1" x2="127.6" y2="294.4" class="path ph-go"/>
+<line x1="127.6" y1="294.4" x2="113.8" y2="279.7" class="path ph-go"/>
+<line x1="113.8" y1="279.7" x2="129.3" y2="288.1" class="path ph-scan"/>
+<line x1="129.3" y1="288.1" x2="162.9" y2="346.3" class="path ph-scan"/>
+<line x1="162.9" y1="346.3" x2="196.4" y2="288.1" class="path ph-scan"/>
+<line x1="196.4" y1="288.1" x2="230.0" y2="346.3" class="path ph-scan"/>
+<line x1="230.0" y1="346.3" x2="290.4" y2="326.9" class="path ph-go"/>
+<line x1="290.4" y1="326.9" x2="296.5" y2="324.4" class="path ph-go"/>
+<line x1="296.5" y1="324.4" x2="292.6" y2="327.3" class="path ph-go"/>
+<line x1="292.6" y1="327.3" x2="300.5" y2="319.4" class="path ph-go"/>
+<line x1="300.5" y1="319.4" x2="307.7" y2="312.0" class="path ph-go"/>
+<line x1="307.7" y1="312.0" x2="330.7" y2="288.1" class="path ph-scan"/>
+<line x1="330.7" y1="288.1" x2="280.6" y2="331.9" class="path ph-go"/>
+<line x1="280.6" y1="331.9" x2="272.7" y2="339.8" class="path ph-go"/>
+<line x1="272.7" y1="339.8" x2="268.0" y2="344.5" class="path ph-go"/>
+<line x1="268.0" y1="344.5" x2="269.3" y2="347.7" class="path ph-go"/>
+<line x1="269.3" y1="347.7" x2="330.1" y2="288.6" class="path ph-fallback"/>
+<line x1="330.1" y1="288.6" x2="329.0" y2="289.6" class="path ph-fallback"/>
+<line x1="329.0" y1="289.6" x2="327.9" y2="290.6" class="path ph-fallback"/>
+<line x1="327.9" y1="290.6" x2="326.8" y2="291.6" class="path ph-fallback"/>
+<line x1="326.8" y1="291.6" x2="325.7" y2="292.6" class="path ph-fallback"/>
+<line x1="325.7" y1="292.6" x2="324.6" y2="293.6" class="path ph-fallback"/>
+<line x1="324.6" y1="293.6" x2="323.5" y2="294.6" class="path ph-fallback"/>
+<line x1="323.5" y1="294.6" x2="322.3" y2="295.6" class="path ph-fallback"/>
+<line x1="322.3" y1="295.6" x2="321.2" y2="296.6" class="path ph-fallback"/>
+<line x1="321.2" y1="296.6" x2="320.1" y2="297.6" class="path ph-fallback"/>
+<line x1="320.1" y1="297.6" x2="319.0" y2="298.6" class="path ph-fallback"/>
+<line x1="319.0" y1="298.6" x2="317.9" y2="299.6" class="path ph-fallback"/>
+<line x1="317.9" y1="299.6" x2="316.8" y2="300.6" class="path ph-fallback"/>
+<line x1="316.8" y1="300.6" x2="315.7" y2="301.6" class="path ph-fallback"/>
+<line x1="315.7" y1="301.6" x2="314.6" y2="302.5" class="path ph-fallback"/>
+<line x1="314.6" y1="302.5" x2="313.4" y2="303.5" class="path ph-fallback"/>
+<line x1="313.4" y1="303.5" x2="312.3" y2="304.5" class="path ph-fallback"/>
+<line x1="312.3" y1="304.5" x2="311.2" y2="305.5" class="path ph-fallback"/>
+<line x1="311.2" y1="305.5" x2="310.1" y2="306.5" class="path ph-fallback"/>
+<line x1="310.1" y1="306.5" x2="309.0" y2="307.5" class="path ph-fallback"/>
+<line x1="309.0" y1="307.5" x2="307.9" y2="308.5" class="path ph-fallback"/>
+<line x1="307.9" y1="308.5" x2="306.8" y2="309.5" class="path ph-fallback"/>
+<line x1="306.8" y1="309.5" x2="305.7" y2="310.5" class="path ph-fallback"/>
+<line x1="305.7" y1="310.5" x2="304.6" y2="311.5" class="path ph-fallback"/>
+<line x1="304.6" y1="311.5" x2="303.4" y2="312.5" class="path ph-fallback"/>
+<line x1="303.4" y1="312.5" x2="302.3" y2="313.5" class="path ph-fallback"/>
+<line x1="302.3" y1="313.5" x2="301.2" y2="314.5" class="path ph-fallback"/>
+<line x1="301.2" y1="314.5" x2="300.1" y2="315.5" class="path ph-fallback"/>
+<line x1="300.1" y1="315.5" x2="298.0" y2="315.4" class="path ph-fallback"/>
+<line x1="298.0" y1="315.4" x2="299.0" y2="316.5" class="path ph-fallback"/>
+<line x1="299.0" y1="316.5" x2="300.0" y2="317.6" class="path ph-fallback"/>
+<line x1="300.0" y1="317.6" x2="298.9" y2="318.6" class="path ph-fallback"/>
+<line x1="298.9" y1="318.6" x2="297.1" y2="346.3" class="path ph-scan"/>
+<line x1="297.1" y1="346.3" x2="295.5" y2="294.0" class="path ph-go"/>
+<line x1="295.5" y1="294.0" x2="294.6" y2="276.6" class="path ph-go"/>
+<line x1="294.6" y1="276.6" x2="295.1" y2="277.1" class="path ph-go"/>
+<line x1="295.1" y1="277.1" x2="295.3" y2="270.3" class="path ph-go"/>
+<line x1="295.3" y1="270.3" x2="330.7" y2="288.1" class="path ph-scan"/>
+<line x1="330.7" y1="288.1" x2="297.1" y2="346.3" class="path ph-scan"/>
+<line x1="297.1" y1="346.3" x2="230.0" y2="346.3" class="path ph-scan"/>
+<line x1="230.0" y1="346.3" x2="196.4" y2="404.4" class="path ph-scan"/>
+<line x1="196.4" y1="404.4" x2="263.6" y2="404.4" class="path ph-scan"/>
+<line x1="263.6" y1="404.4" x2="330.7" y2="404.4" class="path ph-scan"/>
+<line x1="330.7" y1="404.4" x2="364.2" y2="346.3" class="path ph-scan"/>
+<line x1="364.2" y1="346.3" x2="397.8" y2="288.1" class="path ph-scan"/>
+<line x1="397.8" y1="288.1" x2="364.2" y2="230.0" class="path ph-scan"/>
+<line x1="364.2" y1="230.0" x2="330.7" y2="171.9" class="path ph-scan"/>
+<line x1="330.7" y1="171.9" x2="284.1" y2="146.8" class="path ph-go"/>
+<line x1="284.1" y1="146.8" x2="276.2" y2="138.9" class="path ph-go"/>
+<line x1="276.2" y1="138.9" x2="271.5" y2="134.2" class="path ph-go"/>
+<line x1="271.5" y1="134.2" x2="268.3" y2="135.5" class="path ph-go"/>
+<line x1="268.3" y1="135.5" x2="330.1" y2="171.5" class="path ph-fallback"/>
+<line x1="330.1" y1="171.5" x2="328.8" y2="170.6" class="path ph-fallback"/>
+<line x1="328.8" y1="170.6" x2="327.6" y2="169.8" class="path ph-fallback"/>
+<line x1="327.6" y1="169.8" x2="326.3" y2="169.0" class="path ph-fallback"/>
+<line x1="326.3" y1="169.0" x2="325.1" y2="168.2" class="path ph-fallback"/>
+<line x1="325.1" y1="168.2" x2="323.8" y2="167.4" class="path ph-fallback"/>
+<line x1="323.8" y1="167.4" x2="322.6" y2="166.6" class="path ph-fallback"/>
+<line x1="322.6" y1="166.6" x2="321.3" y2="165.7" class="path ph-fallback"/>
+<line x1="321.3" y1="165.7" x2="320.1" y2="164.9" class="path ph-fallback"/>
+<line x1="320.1" y1="164.9" x2="318.8" y2="164.1" class="path ph-fallback"/>
+<line x1="318.8" y1="164.1" x2="317.6" y2="163.3" class="path ph-fallback"/>
+<line x1="317.6" y1="163.3" x2="316.3" y2="162.5" class="path ph-fallback"/>
+<line x1="316.3" y1="162.5" x2="315.1" y2="161.7" class="path ph-fallback"/>
+<line x1="315.1" y1="161.7" x2="313.8" y2="160.8" class="path ph-fallback"/>
+<line x1="313.8" y1="160.8" x2="312.6" y2="160.0" class="path ph-fallback"/>
+<line x1="312.6" y1="160.0" x2="311.3" y2="159.2" class="path ph-fallback"/>
+<line x1="311.3" y1="159.2" x2="310.1" y2="158.4" class="path ph-fallback"/>
+<line x1="310.1" y1="158.4" x2="308.8" y2="157.6" class="path ph-fallback"/>
+<line x1="308.8" y1="157.6" x2="307.6" y2="156.8" class="path ph-fallback"/>
+<line x1="307.6" y1="156.8" x2="306.3" y2="155.9" class="path ph-fallback"/>
+<line x1="306.3" y1="155.9" x2="305.1" y2="155.1" class="path ph-fallback"/>
+<line x1="305.1" y1="155.1" x2="303.9" y2="154.3" class="path ph-fallback"/>
+<line x1="303.9" y1="154.3" x2="302.6" y2="153.5" class="path ph-fallback"/>
+<line x1="302.6" y1="153.5" x2="301.4" y2="152.7" class="path ph-fallback"/>
+<line x1="301.4" y1="152.7" x2="300.1" y2="151.9" class="path ph-fallback"/>
+<line x1="300.1" y1="151.9" x2="330.7" y2="171.9" class="path ph-scan"/>
+<line x1="330.7" y1="171.9" x2="297.1" y2="113.7" class="path ph-scan"/>
+<line x1="297.1" y1="113.7" x2="263.6" y2="55.6" class="path ph-scan"/>
+<line x1="263.6" y1="55.6" x2="196.4" y2="55.6" class="path ph-scan"/>
+<line x1="196.4" y1="55.6" x2="162.9" y2="113.7" class="path ph-scan"/>
+<line x1="162.9" y1="113.7" x2="95.8" y2="113.7" class="path ph-scan"/>
+<line x1="95.8" y1="113.7" x2="62.2" y2="171.9" class="path ph-scan"/>
+<line x1="62.2" y1="171.9" x2="95.8" y2="230.0" class="path ph-scan"/>
+<line x1="95.8" y1="230.0" x2="62.2" y2="288.1" class="path ph-scan"/>
+<line x1="62.2" y1="288.1" x2="95.8" y2="346.3" class="path ph-scan"/>
+<line x1="95.8" y1="346.3" x2="129.3" y2="404.4" class="path ph-scan"/>
+<line x1="129.3" y1="404.4" x2="28.6" y2="230.0" class="path ph-scan"/>
+<line x1="28.6" y1="230.0" x2="129.3" y2="55.6" class="path ph-scan"/>
+<line x1="129.3" y1="55.6" x2="330.7" y2="55.6" class="path ph-scan"/>
+<line x1="330.7" y1="55.6" x2="364.2" y2="113.7" class="path ph-scan"/>
+<line x1="364.2" y1="113.7" x2="397.8" y2="171.9" class="path ph-scan"/>
+<line x1="397.8" y1="171.9" x2="431.4" y2="230.0" class="path ph-scan"/>
+<rect x="226.5" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="192.9" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="192.9" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="260.1" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="260.1" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="159.4" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="293.6" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="342.8" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="110.2" width="7" height="7" class="netpt"/>
+<rect x="125.8" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="125.8" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="327.2" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="327.2" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="159.4" y="342.8" width="7" height="7" class="netpt"/>
+<rect x="159.4" y="110.2" width="7" height="7" class="netpt"/>
+<rect x="293.6" y="342.8" width="7" height="7" class="netpt"/>
+<rect x="293.6" y="110.2" width="7" height="7" class="netpt"/>
+<rect x="92.3" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="360.7" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="58.7" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="58.7" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="92.3" y="342.8" width="7" height="7" class="netpt"/>
+<rect x="92.3" y="110.2" width="7" height="7" class="netpt"/>
+<rect x="192.9" y="400.9" width="7" height="7" class="netpt"/>
+<rect x="192.9" y="52.1" width="7" height="7" class="netpt"/>
+<rect x="260.1" y="400.9" width="7" height="7" class="netpt"/>
+<rect x="260.1" y="52.1" width="7" height="7" class="netpt"/>
+<rect x="360.7" y="342.8" width="7" height="7" class="netpt"/>
+<rect x="360.7" y="110.2" width="7" height="7" class="netpt"/>
+<rect x="394.3" y="284.6" width="7" height="7" class="netpt"/>
+<rect x="394.3" y="168.4" width="7" height="7" class="netpt"/>
+<rect x="25.1" y="226.5" width="7" height="7" class="netpt"/>
+<rect x="125.8" y="400.9" width="7" height="7" class="netpt"/>
+<rect x="125.8" y="52.1" width="7" height="7" class="netpt"/>
+<rect x="327.2" y="400.9" width="7" height="7" class="netpt"/>
+<rect x="327.2" y="52.1" width="7" height="7" class="netpt"/>
+<rect x="427.9" y="226.5" width="7" height="7" class="netpt"/>
+<line x1="306.8" y1="312.8" x2="305.1" y2="329.9" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="306.8" cy="312.8" r="4.2" class="src src-d"/>
+<line x1="299.3" y1="152.0" x2="315.4" y2="146.1" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="299.3" cy="152.0" r="4.2" class="src src-d"/>
+<line x1="168.8" y1="140.0" x2="156.4" y2="151.8" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="168.8" cy="140.0" r="4.2" class="src src-d"/>
+<circle cx="224.5" cy="217.7" r="4.2" class="src "/>
+<line x1="128.4" y1="148.1" x2="121.5" y2="163.8" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="128.4" cy="148.1" r="4.2" class="src src-d"/>
+<line x1="298.0" y1="318.4" x2="310.2" y2="306.4" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="298.0" cy="318.4" r="4.2" class="src src-d"/>
+<circle cx="114.5" cy="280.4" r="4.2" class="src "/>
+<circle cx="118.9" cy="158.0" r="4.2" class="src "/>
+<line x1="296.7" y1="256.4" x2="286.2" y2="270.0" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="296.7" cy="256.4" r="4.2" class="src src-d"/>
+<circle cx="252.1" cy="319.3" r="4.2" class="src "/>
+<line x1="228.6" y1="255.0" x2="214.3" y2="264.5" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="228.6" cy="255.0" r="4.2" class="src src-d"/>
+<line x1="295.4" y1="269.6" x2="310.7" y2="277.3" class="dirarrow" marker-end="url(#ar-q4-s1)"/>
+<circle cx="295.4" cy="269.6" r="4.2" class="src src-d"/>
+<circle cx="106.1" cy="275.6" r="4.2" class="src "/>
+<circle cx="230.0" cy="230.0" r="3" class="origin"/>
+<line x1="18.9" y1="438.8" x2="93.5" y2="438.8" class="scale"/><text x="18.9" y="431.8" class="tick">1000 m</text>
+</svg><p class="panel-title" style="margin-top:6px">覆盖巡回 41.5 km；发现即去 11.5 km；兜底逐格 4.5 km</p></div><div class="panel"><p class="panel-title"><b>方案三（27 点格网）</b> · 总 9830 s（每源 756 s）· 361 个动作 · 走了 39.0 km</p><svg viewBox="0 0 460 460" class="fig-svg" role="img" aria-label="方案三（27 点格网）">
+<defs><marker id="ar-q4-s3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs>
+<rect x="0" y="0" width="460" height="460" class="plot-bg"/>
+<circle cx="230.0" cy="230.0" r="134.2" class="disk"/>
+<line x1="230.0" y1="230.0" x2="230.0" y2="214.0" class="path ph-scan"/>
+<line x1="230.0" y1="214.0" x2="193.1" y2="278.0" class="path ph-scan"/>
+<line x1="193.1" y1="278.0" x2="156.2" y2="214.0" class="path ph-scan"/>
+<line x1="156.2" y1="214.0" x2="119.3" y2="278.0" class="path ph-scan"/>
+<line x1="119.3" y1="278.0" x2="119.9" y2="287.0" class="path ph-go"/>
+<line x1="119.9" y1="287.0" x2="114.5" y2="280.3" class="path ph-go"/>
+<line x1="114.5" y1="280.3" x2="82.3" y2="214.0" class="path ph-scan"/>
+<line x1="82.3" y1="214.0" x2="45.4" y2="278.0" class="path ph-scan"/>
+<line x1="45.4" y1="278.0" x2="82.3" y2="341.9" class="path ph-scan"/>
+<line x1="82.3" y1="341.9" x2="119.3" y2="405.8" class="path ph-scan"/>
+<line x1="119.3" y1="405.8" x2="193.1" y2="405.8" class="path ph-scan"/>
+<line x1="193.1" y1="405.8" x2="266.9" y2="405.8" class="path ph-scan"/>
+<line x1="266.9" y1="405.8" x2="340.7" y2="405.8" class="path ph-scan"/>
+<line x1="340.7" y1="405.8" x2="377.7" y2="341.9" class="path ph-scan"/>
+<line x1="377.7" y1="341.9" x2="303.8" y2="341.9" class="path ph-scan"/>
+<line x1="303.8" y1="341.9" x2="307.1" y2="313.0" class="path ph-go"/>
+<line x1="307.1" y1="313.0" x2="230.0" y2="341.9" class="path ph-scan"/>
+<line x1="230.0" y1="341.9" x2="156.2" y2="341.9" class="path ph-scan"/>
+<line x1="156.2" y1="341.9" x2="250.7" y2="320.8" class="path ph-go"/>
+<line x1="250.7" y1="320.8" x2="252.6" y2="320.0" class="path ph-go"/>
+<line x1="252.6" y1="320.0" x2="266.9" y2="278.0" class="path ph-scan"/>
+<line x1="266.9" y1="278.0" x2="290.5" y2="292.5" class="path ph-go"/>
+<line x1="290.5" y1="292.5" x2="296.0" y2="256.5" class="path ph-go"/>
+<line x1="296.0" y1="256.5" x2="303.8" y2="214.0" class="path ph-scan"/>
+<line x1="303.8" y1="214.0" x2="340.7" y2="278.0" class="path ph-scan"/>
+<line x1="340.7" y1="278.0" x2="414.6" y2="278.0" class="path ph-scan"/>
+<line x1="414.6" y1="278.0" x2="377.7" y2="214.0" class="path ph-scan"/>
+<line x1="377.7" y1="214.0" x2="340.7" y2="150.1" class="path ph-scan"/>
+<line x1="340.7" y1="150.1" x2="266.9" y2="150.1" class="path ph-scan"/>
+<line x1="266.9" y1="150.1" x2="193.1" y2="150.1" class="path ph-scan"/>
+<line x1="193.1" y1="150.1" x2="178.8" y2="157.6" class="path ph-go"/>
+<line x1="178.8" y1="157.6" x2="128.2" y2="150.5" class="path ph-fallback"/>
+<line x1="128.2" y1="150.5" x2="126.9" y2="151.1" class="path ph-fallback"/>
+<line x1="126.9" y1="151.1" x2="126.3" y2="149.8" class="path ph-fallback"/>
+<line x1="126.3" y1="149.8" x2="127.6" y2="149.2" class="path ph-fallback"/>
+<line x1="127.6" y1="149.2" x2="130.9" y2="155.7" class="path ph-go"/>
+<line x1="130.9" y1="155.7" x2="118.2" y2="158.2" class="path ph-go"/>
+<line x1="118.2" y1="158.2" x2="119.3" y2="150.1" class="path ph-scan"/>
+<line x1="119.3" y1="150.1" x2="168.6" y2="140.1" class="path ph-go"/>
+<line x1="168.6" y1="140.1" x2="156.2" y2="86.1" class="path ph-scan"/>
+<line x1="156.2" y1="86.1" x2="230.0" y2="86.1" class="path ph-scan"/>
+<line x1="230.0" y1="86.1" x2="303.8" y2="86.1" class="path ph-scan"/>
+<line x1="303.8" y1="86.1" x2="300.3" y2="100.3" class="path ph-final"/>
+<line x1="300.3" y1="100.3" x2="299.4" y2="152.6" class="path ph-final"/>
+<line x1="299.4" y1="152.6" x2="255.1" y2="160.8" class="path ph-final"/>
+<line x1="255.1" y1="160.8" x2="193.7" y2="277.5" class="path ph-fallback"/>
+<line x1="193.7" y1="277.5" x2="194.9" y2="276.7" class="path ph-fallback"/>
+<line x1="194.9" y1="276.7" x2="196.2" y2="275.9" class="path ph-fallback"/>
+<line x1="196.2" y1="275.9" x2="197.4" y2="275.1" class="path ph-fallback"/>
+<line x1="197.4" y1="275.1" x2="198.7" y2="274.2" class="path ph-fallback"/>
+<line x1="198.7" y1="274.2" x2="199.9" y2="273.4" class="path ph-fallback"/>
+<line x1="199.9" y1="273.4" x2="201.1" y2="272.6" class="path ph-fallback"/>
+<line x1="201.1" y1="272.6" x2="202.4" y2="271.7" class="path ph-fallback"/>
+<line x1="202.4" y1="271.7" x2="203.6" y2="270.9" class="path ph-fallback"/>
+<line x1="203.6" y1="270.9" x2="204.9" y2="270.1" class="path ph-fallback"/>
+<line x1="204.9" y1="270.1" x2="206.1" y2="269.3" class="path ph-fallback"/>
+<line x1="206.1" y1="269.3" x2="207.3" y2="268.4" class="path ph-fallback"/>
+<line x1="207.3" y1="268.4" x2="208.6" y2="267.6" class="path ph-fallback"/>
+<line x1="208.6" y1="267.6" x2="209.8" y2="266.8" class="path ph-fallback"/>
+<line x1="209.8" y1="266.8" x2="211.1" y2="265.9" class="path ph-fallback"/>
+<line x1="211.1" y1="265.9" x2="212.3" y2="265.1" class="path ph-fallback"/>
+<line x1="212.3" y1="265.1" x2="213.5" y2="264.3" class="path ph-fallback"/>
+<line x1="213.5" y1="264.3" x2="214.8" y2="263.5" class="path ph-fallback"/>
+<line x1="214.8" y1="263.5" x2="216.0" y2="262.6" class="path ph-fallback"/>
+<line x1="216.0" y1="262.6" x2="217.3" y2="261.8" class="path ph-fallback"/>
+<line x1="217.3" y1="261.8" x2="218.5" y2="261.0" class="path ph-fallback"/>
+<line x1="218.5" y1="261.0" x2="219.7" y2="260.1" class="path ph-fallback"/>
+<line x1="219.7" y1="260.1" x2="221.0" y2="259.3" class="path ph-fallback"/>
+<line x1="221.0" y1="259.3" x2="222.2" y2="258.5" class="path ph-fallback"/>
+<line x1="222.2" y1="258.5" x2="223.5" y2="257.7" class="path ph-fallback"/>
+<line x1="223.5" y1="257.7" x2="224.7" y2="256.8" class="path ph-fallback"/>
+<line x1="224.7" y1="256.8" x2="225.9" y2="256.0" class="path ph-fallback"/>
+<line x1="225.9" y1="256.0" x2="227.2" y2="255.2" class="path ph-fallback"/>
+<line x1="227.2" y1="255.2" x2="224.5" y2="217.7" class="path ph-final"/>
+<line x1="224.5" y1="217.7" x2="254.2" y2="303.8" class="path ph-final"/>
+<line x1="254.2" y1="303.8" x2="294.4" y2="271.7" class="path ph-fallback"/>
+<line x1="294.4" y1="271.7" x2="295.9" y2="271.5" class="path ph-fallback"/>
+<line x1="295.9" y1="271.5" x2="295.7" y2="270.0" class="path ph-fallback"/>
+<line x1="295.7" y1="270.0" x2="256.3" y2="294.4" class="path ph-final"/>
+<line x1="256.3" y1="294.4" x2="297.3" y2="319.5" class="path ph-fallback"/>
+<line x1="297.3" y1="319.5" x2="106.1" y2="275.7" class="path ph-final"/>
+<rect x="41.9" y="274.5" width="7" height="7" class="netpt"/>
+<rect x="78.8" y="338.4" width="7" height="7" class="netpt"/>
+<rect x="78.8" y="210.5" width="7" height="7" class="netpt"/>
+<rect x="115.8" y="402.3" width="7" height="7" class="netpt"/>
+<rect x="115.8" y="274.5" width="7" height="7" class="netpt"/>
+<rect x="115.8" y="146.6" width="7" height="7" class="netpt"/>
+<rect x="152.7" y="338.4" width="7" height="7" class="netpt"/>
+<rect x="152.7" y="210.5" width="7" height="7" class="netpt"/>
+<rect x="152.7" y="82.6" width="7" height="7" class="netpt"/>
+<rect x="189.6" y="402.3" width="7" height="7" class="netpt"/>
+<rect x="189.6" y="274.5" width="7" height="7" class="netpt"/>
+<rect x="189.6" y="146.6" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="338.4" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="210.5" width="7" height="7" class="netpt"/>
+<rect x="226.5" y="82.6" width="7" height="7" class="netpt"/>
+<rect x="263.4" y="402.3" width="7" height="7" class="netpt"/>
+<rect x="263.4" y="274.5" width="7" height="7" class="netpt"/>
+<rect x="263.4" y="146.6" width="7" height="7" class="netpt"/>
+<rect x="300.3" y="338.4" width="7" height="7" class="netpt"/>
+<rect x="300.3" y="210.5" width="7" height="7" class="netpt"/>
+<rect x="300.3" y="82.6" width="7" height="7" class="netpt"/>
+<rect x="337.2" y="402.3" width="7" height="7" class="netpt"/>
+<rect x="337.2" y="274.5" width="7" height="7" class="netpt"/>
+<rect x="337.2" y="146.6" width="7" height="7" class="netpt"/>
+<rect x="374.2" y="338.4" width="7" height="7" class="netpt"/>
+<rect x="374.2" y="210.5" width="7" height="7" class="netpt"/>
+<rect x="411.1" y="274.5" width="7" height="7" class="netpt"/>
+<line x1="306.8" y1="312.8" x2="305.1" y2="329.9" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="306.8" cy="312.8" r="4.2" class="src src-d"/>
+<line x1="299.3" y1="152.0" x2="315.4" y2="146.1" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="299.3" cy="152.0" r="4.2" class="src src-d"/>
+<line x1="168.8" y1="140.0" x2="156.4" y2="151.8" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="168.8" cy="140.0" r="4.2" class="src src-d"/>
+<circle cx="224.5" cy="217.7" r="4.2" class="src "/>
+<line x1="128.4" y1="148.1" x2="121.5" y2="163.8" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="128.4" cy="148.1" r="4.2" class="src src-d"/>
+<line x1="298.0" y1="318.4" x2="310.2" y2="306.4" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="298.0" cy="318.4" r="4.2" class="src src-d"/>
+<circle cx="114.5" cy="280.4" r="4.2" class="src "/>
+<circle cx="118.9" cy="158.0" r="4.2" class="src "/>
+<line x1="296.7" y1="256.4" x2="286.2" y2="270.0" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="296.7" cy="256.4" r="4.2" class="src src-d"/>
+<circle cx="252.1" cy="319.3" r="4.2" class="src "/>
+<line x1="228.6" y1="255.0" x2="214.3" y2="264.5" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="228.6" cy="255.0" r="4.2" class="src src-d"/>
+<line x1="295.4" y1="269.6" x2="310.7" y2="277.3" class="dirarrow" marker-end="url(#ar-q4-s3)"/>
+<circle cx="295.4" cy="269.6" r="4.2" class="src src-d"/>
+<circle cx="106.1" cy="275.6" r="4.2" class="src "/>
+<circle cx="230.0" cy="230.0" r="3" class="origin"/>
+<line x1="18.9" y1="438.8" x2="93.5" y2="438.8" class="scale"/><text x="18.9" y="431.8" class="tick">1000 m</text>
+</svg><p class="panel-title" style="margin-top:6px">覆盖巡回 24.1 km；顺路清除 4.0 km；覆盖后集中清除 6.5 km；兜底逐格 4.4 km</p></div></div>
+  <figcaption>示例局：13 个源（实心为定向源，箭头为发射方向）。格距从 900 m 放宽到 990 m（证明只要求 ≤1000 m），格点从 37 个减到 27 个。每局至少有 4 个空频道要在每个格点都测，点数少了，测量和巡回都跟着少。</figcaption></figure>
+</section>
+
+<section id="where">
+  <div class="sec-head"><div class="eyebrow">省在哪里</div><h2>逐步拆开：每一项改动省了多少</h2></div>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">问题三 每源平均（s）</p><svg viewBox="0 0 560 214" class="fig-svg" role="img" aria-label="问题三逐步优化">
+<text x="10" y="22" class="lbl">方案一（交接版）</text>
+<rect x="10" y="28" width="410.0" height="16" rx="3" class="wf-base"><title>方案一（交接版）：451 s/源</title></rect>
+<text x="428.0" y="41" class="tick" style="font-size:12px">451 s</text>
+<text x="10" y="68" class="lbl">每点扫完 + 顺带补测 + 覆盖后集中清除（x=0）</text>
+<rect x="10" y="74" width="319.7" height="16" rx="3" class="wf-bar"><title>每点扫完 + 顺带补测 + 覆盖后集中清除（x=0）：351 s/源</title></rect>
+<text x="337.7" y="87" class="tick" style="font-size:12px">351 s  −99</text>
+<text x="10" y="114" class="lbl">加顺路清除 x=600 m</text>
+<rect x="10" y="120" width="314.8" height="16" rx="3" class="wf-bar"><title>加顺路清除 x=600 m：346 s/源</title></rect>
+<text x="332.8" y="133" class="tick" style="font-size:12px">346 s  −5</text>
+<text x="10" y="160" class="lbl">覆盖网换正八边形 974 m</text>
+<rect x="10" y="166" width="305.3" height="16" rx="3" class="wf-final"><title>覆盖网换正八边形 974 m：336 s/源</title></rect>
+<text x="323.3" y="179" class="tick" style="font-size:12px">336 s  −11</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">问题四 每源平均（s）</p><svg viewBox="0 0 560 214" class="fig-svg" role="img" aria-label="问题四逐步优化">
+<text x="10" y="22" class="lbl">方案一（交接版，37 点）</text>
+<rect x="10" y="28" width="410.0" height="16" rx="3" class="wf-base"><title>方案一（交接版，37 点）：977 s/源</title></rect>
+<text x="428.0" y="41" class="tick" style="font-size:12px">977 s</text>
+<text x="10" y="68" class="lbl">每点扫完 + 顺带补测 + 覆盖后集中清除（x=0）</text>
+<rect x="10" y="74" width="376.6" height="16" rx="3" class="wf-bar"><title>每点扫完 + 顺带补测 + 覆盖后集中清除（x=0）：898 s/源</title></rect>
+<text x="394.6" y="87" class="tick" style="font-size:12px">898 s  −80</text>
+<text x="10" y="114" class="lbl">加顺路清除 x=600 m</text>
+<rect x="10" y="120" width="361.8" height="16" rx="3" class="wf-bar"><title>加顺路清除 x=600 m：863 s/源</title></rect>
+<text x="379.8" y="133" class="tick" style="font-size:12px">863 s  −35</text>
+<text x="10" y="160" class="lbl">格网换 h=990 m、27 点</text>
+<rect x="10" y="166" width="312.5" height="16" rx="3" class="wf-final"><title>格网换 h=990 m、27 点：745 s/源</title></rect>
+<text x="330.5" y="179" class="tick" style="font-size:12px">745 s  −118</text>
+</svg></div></figure>
+  </div>
+  <p class="prose">最大的一步是第一步：不再“发现即去”，而是每个点扫完、在后面的覆盖点顺带补测、最后集中清除。问题三靠这一步就省了约 100 s/源。问题四最大的收益来自格网变稀。</p>
+  <figure class="fig"><div class="panel bars" role="img" aria-label="单局平均虚拟时间构成对比">
+    <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>移动</span><span><i class="sw" style="background:var(--s2)"></i>检测</span><span><i class="sw" style="background:var(--s3)"></i>切换频道</span><span><i class="sw" style="background:var(--s4)"></i>清除</span></div>
+    <p class="panel-title" style="margin:4px 0 0">问题三 · 单局平均</p><div class="bar-row"><span class="bar-name">方案一</span><div><div class="bar"><div class="seg m" style="flex:0 0 calc(85.176% - 2px)" title="方案一·移动：4863 s（85%）"></div><div class="seg d" style="flex:0 0 calc(10.365% - 2px)" title="方案一·检测：592 s（10%）"></div><div class="seg w" style="flex:0 0 calc(1.294% - 2px)" title="方案一·切换频道：74 s（1%）"></div><div class="seg c" style="flex:0 0 calc(3.165% - 2px)" title="方案一·清除：181 s（3%）"></div></div><div class="bar-total">合计 5710 s · 移动 4863 s · 检测 592 s · 切换 74 s · 清除 181 s</div></div></div>
+<div class="bar-row"><span class="bar-name">方案三</span><div><div class="bar"><div class="seg m" style="flex:0 0 calc(60.880% - 2px)" title="方案三·移动：3476 s（82%）"></div><div class="seg d" style="flex:0 0 calc(10.199% - 2px)" title="方案三·检测：582 s（14%）"></div><div class="seg w" style="flex:0 0 calc(1.979% - 2px)" title="方案三·切换频道：113 s（3%）"></div><div class="seg c" style="flex:0 0 calc(1.305% - 2px)" title="方案三·清除：74 s（2%）"></div></div><div class="bar-total">合计 4246 s · 移动 3476 s · 检测 582 s · 切换 113 s · 清除 74 s</div></div></div>
+    <p class="panel-title" style="margin:8px 0 0">问题四 · 单局平均</p><div class="bar-row"><span class="bar-name">方案一</span><div><div class="bar"><div class="seg m" style="flex:0 0 calc(80.297% - 2px)" title="方案一·移动：9508 s（80%）"></div><div class="seg d" style="flex:0 0 calc(13.895% - 2px)" title="方案一·检测：1645 s（14%）"></div><div class="seg w" style="flex:0 0 calc(2.181% - 2px)" title="方案一·切换频道：258 s（2%）"></div><div class="seg c" style="flex:0 0 calc(3.627% - 2px)" title="方案一·清除：430 s（4%）"></div></div><div class="bar-total">合计 11841 s · 移动 9508 s · 检测 1645 s · 切换 258 s · 清除 430 s</div></div></div>
+<div class="bar-row"><span class="bar-name">方案三</span><div><div class="bar"><div class="seg m" style="flex:0 0 calc(62.213% - 2px)" title="方案三·移动：7367 s（79%）"></div><div class="seg d" style="flex:0 0 calc(13.338% - 2px)" title="方案三·检测：1579 s（17%）"></div><div class="seg w" style="flex:0 0 calc(2.471% - 2px)" title="方案三·切换频道：293 s（3%）"></div><div class="seg c" style="flex:0 0 calc(0.988% - 2px)" title="方案三·清除：117 s（1%）"></div></div><div class="bar-total">合计 9356 s · 移动 7367 s · 检测 1579 s · 切换 293 s · 清除 117 s</div></div></div>
+  </div><figcaption>检测时间几乎没变（每个频道仍要覆盖全图），省下来的几乎全是移动；清除时间也少了，因为源定得更准，试清失败少了，兜底几乎不用。</figcaption></figure>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">问题三：每局一个点（颜色 = N）</p><svg viewBox="0 0 340 340" class="fig-svg" role="img" aria-label="问题三逐局对比">
+<rect x="44" y="8" width="282.0" height="282.0" class="plot-bg"/>
+<line x1="44.0" y1="8" x2="44.0" y2="304.0" class="grid"/><line x1="44" y1="304.0" x2="326.0" y2="304.0" class="grid"/>
+<text x="44.0" y="319.0" class="tick" text-anchor="middle">200</text><text x="39" y="308.0" class="tick" text-anchor="end">200</text>
+<line x1="106.7" y1="8" x2="106.7" y2="304.0" class="grid"/><line x1="44" y1="241.3" x2="326.0" y2="241.3" class="grid"/>
+<text x="106.7" y="319.0" class="tick" text-anchor="middle">300</text><text x="39" y="245.3" class="tick" text-anchor="end">300</text>
+<line x1="169.3" y1="8" x2="169.3" y2="304.0" class="grid"/><line x1="44" y1="178.7" x2="326.0" y2="178.7" class="grid"/>
+<text x="169.3" y="319.0" class="tick" text-anchor="middle">400</text><text x="39" y="182.7" class="tick" text-anchor="end">400</text>
+<line x1="232.0" y1="8" x2="232.0" y2="304.0" class="grid"/><line x1="44" y1="116.0" x2="326.0" y2="116.0" class="grid"/>
+<text x="232.0" y="319.0" class="tick" text-anchor="middle">500</text><text x="39" y="120.0" class="tick" text-anchor="end">500</text>
+<line x1="294.7" y1="8" x2="294.7" y2="304.0" class="grid"/><line x1="44" y1="53.3" x2="326.0" y2="53.3" class="grid"/>
+<text x="294.7" y="319.0" class="tick" text-anchor="middle">600</text><text x="39" y="57.3" class="tick" text-anchor="end">600</text>
+<line x1="44.0" y1="304.0" x2="326.0" y2="22.0" class="diag"/>
+<text x="317.5" y="44.6" class="lbl-muted" text-anchor="end">两者相同</text>
+<circle cx="250.6" cy="155.4" r="5" class="dot n10"><title>N=10：方案一 530 s → 方案三 437 s</title></circle>
+<circle cx="224.8" cy="174.4" r="5" class="dot n10"><title>N=10：方案一 489 s → 方案三 407 s</title></circle>
+<circle cx="246.5" cy="196.1" r="5" class="dot n10"><title>N=10：方案一 523 s → 方案三 372 s</title></circle>
+<circle cx="234.8" cy="194.4" r="5" class="dot n10"><title>N=10：方案一 505 s → 方案三 375 s</title></circle>
+<circle cx="263.2" cy="141.6" r="5" class="dot n10"><title>N=10：方案一 550 s → 方案三 459 s</title></circle>
+<circle cx="275.7" cy="191.7" r="5" class="dot n10"><title>N=10：方案一 570 s → 方案三 379 s</title></circle>
+<circle cx="258.7" cy="191.5" r="5" class="dot n10"><title>N=10：方案一 543 s → 方案三 379 s</title></circle>
+<circle cx="254.0" cy="216.8" r="5" class="dot n10"><title>N=10：方案一 535 s → 方案三 339 s</title></circle>
+<circle cx="204.6" cy="174.4" r="5" class="dot n10"><title>N=10：方案一 456 s → 方案三 407 s</title></circle>
+<circle cx="258.0" cy="183.4" r="5" class="dot n10"><title>N=10：方案一 542 s → 方案三 392 s</title></circle>
+<circle cx="194.8" cy="220.0" r="5" class="dot n13"><title>N=13：方案一 441 s → 方案三 334 s</title></circle>
+<circle cx="207.7" cy="224.4" r="5" class="dot n13"><title>N=13：方案一 461 s → 方案三 327 s</title></circle>
+<circle cx="186.2" cy="237.5" r="5" class="dot n13"><title>N=13：方案一 427 s → 方案三 306 s</title></circle>
+<circle cx="211.2" cy="215.7" r="5" class="dot n13"><title>N=13：方案一 467 s → 方案三 341 s</title></circle>
+<circle cx="199.6" cy="219.0" r="5" class="dot n13"><title>N=13：方案一 448 s → 方案三 336 s</title></circle>
+<circle cx="211.9" cy="224.0" r="5" class="dot n13"><title>N=13：方案一 468 s → 方案三 328 s</title></circle>
+<circle cx="203.5" cy="188.0" r="5" class="dot n13"><title>N=13：方案一 454 s → 方案三 385 s</title></circle>
+<circle cx="181.5" cy="219.1" r="5" class="dot n13"><title>N=13：方案一 419 s → 方案三 335 s</title></circle>
+<circle cx="223.6" cy="240.0" r="5" class="dot n13"><title>N=13：方案一 487 s → 方案三 302 s</title></circle>
+<circle cx="217.8" cy="205.5" r="5" class="dot n13"><title>N=13：方案一 477 s → 方案三 357 s</title></circle>
+<circle cx="138.2" cy="241.2" r="5" class="dot n16"><title>N=16：方案一 350 s → 方案三 300 s</title></circle>
+<circle cx="153.3" cy="264.0" r="5" class="dot n16"><title>N=16：方案一 374 s → 方案三 264 s</title></circle>
+<circle cx="160.6" cy="268.7" r="5" class="dot n16"><title>N=16：方案一 386 s → 方案三 256 s</title></circle>
+<circle cx="164.7" cy="253.0" r="5" class="dot n16"><title>N=16：方案一 393 s → 方案三 281 s</title></circle>
+<circle cx="164.5" cy="231.2" r="5" class="dot n16"><title>N=16：方案一 392 s → 方案三 316 s</title></circle>
+<circle cx="136.7" cy="276.5" r="5" class="dot n16"><title>N=16：方案一 348 s → 方案三 244 s</title></circle>
+<circle cx="148.2" cy="250.2" r="5" class="dot n16"><title>N=16：方案一 366 s → 方案三 286 s</title></circle>
+<circle cx="128.3" cy="260.9" r="5" class="dot n16"><title>N=16：方案一 334 s → 方案三 269 s</title></circle>
+<circle cx="180.0" cy="251.0" r="5" class="dot n16"><title>N=16：方案一 417 s → 方案三 285 s</title></circle>
+<circle cx="151.8" cy="260.0" r="5" class="dot n16"><title>N=16：方案一 372 s → 方案三 270 s</title></circle>
+<text x="185.0" y="334" class="lbl-muted" text-anchor="middle">方案一 每源时间（s）</text>
+<text x="12" y="149.0" class="lbl-muted" text-anchor="middle" transform="rotate(-90 12 149.0)">方案三 每源时间（s）</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">问题四：每局一个点（颜色 = N）</p><svg viewBox="0 0 340 340" class="fig-svg" role="img" aria-label="问题四逐局对比">
+<rect x="44" y="8" width="282.0" height="282.0" class="plot-bg"/>
+<line x1="87.4" y1="8" x2="87.4" y2="304.0" class="grid"/><line x1="44" y1="260.6" x2="326.0" y2="260.6" class="grid"/>
+<text x="87.4" y="319.0" class="tick" text-anchor="middle">500</text><text x="39" y="264.6" class="tick" text-anchor="end">500</text>
+<line x1="141.6" y1="8" x2="141.6" y2="304.0" class="grid"/><line x1="44" y1="206.4" x2="326.0" y2="206.4" class="grid"/>
+<text x="141.6" y="319.0" class="tick" text-anchor="middle">750</text><text x="39" y="210.4" class="tick" text-anchor="end">750</text>
+<line x1="195.8" y1="8" x2="195.8" y2="304.0" class="grid"/><line x1="44" y1="152.2" x2="326.0" y2="152.2" class="grid"/>
+<text x="195.8" y="319.0" class="tick" text-anchor="middle">1000</text><text x="39" y="156.2" class="tick" text-anchor="end">1000</text>
+<line x1="250.1" y1="8" x2="250.1" y2="304.0" class="grid"/><line x1="44" y1="97.9" x2="326.0" y2="97.9" class="grid"/>
+<text x="250.1" y="319.0" class="tick" text-anchor="middle">1250</text><text x="39" y="101.9" class="tick" text-anchor="end">1250</text>
+<line x1="304.3" y1="8" x2="304.3" y2="304.0" class="grid"/><line x1="44" y1="43.7" x2="326.0" y2="43.7" class="grid"/>
+<text x="304.3" y="319.0" class="tick" text-anchor="middle">1500</text><text x="39" y="47.7" class="tick" text-anchor="end">1500</text>
+<line x1="44.0" y1="304.0" x2="326.0" y2="22.0" class="diag"/>
+<text x="317.5" y="44.6" class="lbl-muted" text-anchor="end">两者相同</text>
+<circle cx="283.6" cy="180.3" r="5" class="dot n10"><title>N=10：方案一 1405 s → 方案三 870 s</title></circle>
+<circle cx="266.9" cy="178.6" r="5" class="dot n10"><title>N=10：方案一 1327 s → 方案三 878 s</title></circle>
+<circle cx="292.1" cy="159.7" r="5" class="dot n10"><title>N=10：方案一 1444 s → 方案三 965 s</title></circle>
+<circle cx="256.8" cy="164.1" r="5" class="dot n10"><title>N=10：方案一 1281 s → 方案三 945 s</title></circle>
+<circle cx="279.7" cy="162.5" r="5" class="dot n10"><title>N=10：方案一 1387 s → 方案三 952 s</title></circle>
+<circle cx="269.0" cy="169.7" r="5" class="dot n10"><title>N=10：方案一 1337 s → 方案三 919 s</title></circle>
+<circle cx="272.1" cy="166.5" r="5" class="dot n10"><title>N=10：方案一 1352 s → 方案三 934 s</title></circle>
+<circle cx="280.1" cy="170.2" r="5" class="dot n10"><title>N=10：方案一 1389 s → 方案三 917 s</title></circle>
+<circle cx="254.8" cy="177.9" r="5" class="dot n10"><title>N=10：方案一 1272 s → 方案三 881 s</title></circle>
+<circle cx="291.7" cy="168.4" r="5" class="dot n10"><title>N=10：方案一 1442 s → 方案三 925 s</title></circle>
+<circle cx="202.2" cy="210.2" r="5" class="dot n13"><title>N=13：方案一 1029 s → 方案三 732 s</title></circle>
+<circle cx="215.5" cy="203.8" r="5" class="dot n13"><title>N=13：方案一 1091 s → 方案三 762 s</title></circle>
+<circle cx="218.4" cy="215.9" r="5" class="dot n13"><title>N=13：方案一 1104 s → 方案三 706 s</title></circle>
+<circle cx="200.9" cy="213.7" r="5" class="dot n13"><title>N=13：方案一 1024 s → 方案三 716 s</title></circle>
+<circle cx="221.1" cy="206.8" r="5" class="dot n13"><title>N=13：方案一 1116 s → 方案三 748 s</title></circle>
+<circle cx="215.6" cy="205.0" r="5" class="dot n13"><title>N=13：方案一 1091 s → 方案三 756 s</title></circle>
+<circle cx="212.3" cy="219.3" r="5" class="dot n13"><title>N=13：方案一 1076 s → 方案三 691 s</title></circle>
+<circle cx="199.3" cy="218.6" r="5" class="dot n13"><title>N=13：方案一 1016 s → 方案三 694 s</title></circle>
+<circle cx="218.1" cy="221.1" r="5" class="dot n13"><title>N=13：方案一 1103 s → 方案三 682 s</title></circle>
+<circle cx="208.0" cy="200.0" r="5" class="dot n13"><title>N=13：方案一 1056 s → 方案三 780 s</title></circle>
+<circle cx="73.8" cy="250.0" r="5" class="dot n16"><title>N=16：方案一 437 s → 方案三 549 s</title></circle>
+<circle cx="100.3" cy="246.6" r="5" class="dot n16"><title>N=16：方案一 560 s → 方案三 564 s</title></circle>
+<circle cx="58.8" cy="240.4" r="5" class="dot n16"><title>N=16：方案一 368 s → 方案三 593 s</title></circle>
+<circle cx="82.9" cy="240.5" r="5" class="dot n16"><title>N=16：方案一 479 s → 方案三 593 s</title></circle>
+<circle cx="88.0" cy="226.0" r="5" class="dot n16"><title>N=16：方案一 503 s → 方案三 659 s</title></circle>
+<circle cx="143.4" cy="242.0" r="5" class="dot n16"><title>N=16：方案一 758 s → 方案三 586 s</title></circle>
+<circle cx="70.8" cy="246.8" r="5" class="dot n16"><title>N=16：方案一 424 s → 方案三 564 s</title></circle>
+<circle cx="59.3" cy="245.6" r="5" class="dot n16"><title>N=16：方案一 371 s → 方案三 569 s</title></circle>
+<circle cx="75.6" cy="240.1" r="5" class="dot n16"><title>N=16：方案一 446 s → 方案三 594 s</title></circle>
+<circle cx="117.1" cy="233.8" r="5" class="dot n16"><title>N=16：方案一 637 s → 方案三 624 s</title></circle>
+<text x="185.0" y="334" class="lbl-muted" text-anchor="middle">方案一 每源时间（s）</text>
+<text x="12" y="149.0" class="lbl-muted" text-anchor="middle" transform="rotate(-90 12 149.0)">方案三 每源时间（s）</text>
+</svg></div></figure>
+  </div>
+  <div class="legend"><span><i class="sw" style="background:var(--s1);border-radius:50%"></i>N=10</span><span><i class="sw" style="background:var(--s2);border-radius:50%"></i>N=13</span><span><i class="sw" style="background:var(--s3);border-radius:50%"></i>N=16</span><span>点在虚线下方 = 方案三更快</span></div>
+</section>
+
+<section id="param">
+  <div class="sec-head"><div class="eyebrow">参数</div><h2>x 取多大，r_ok 要不要</h2></div>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">问题三（正八边形 974 m）每源平均（s）</p><svg viewBox="0 0 460 260" class="fig-svg" role="img" aria-label="问题三 x 扫描">
+<rect x="48" y="12" width="398" height="214" class="plot-bg"/>
+<line x1="48" y1="226.0" x2="446" y2="226.0" class="grid"/><text x="42" y="230.0" class="tick" text-anchor="end">300</text>
+<line x1="48" y1="190.3" x2="446" y2="190.3" class="grid"/><text x="42" y="194.3" class="tick" text-anchor="end">350</text>
+<line x1="48" y1="154.7" x2="446" y2="154.7" class="grid"/><text x="42" y="158.7" class="tick" text-anchor="end">400</text>
+<line x1="48" y1="119.0" x2="446" y2="119.0" class="grid"/><text x="42" y="123.0" class="tick" text-anchor="end">450</text>
+<line x1="48" y1="83.3" x2="446" y2="83.3" class="grid"/><text x="42" y="87.3" class="tick" text-anchor="end">500</text>
+<line x1="48" y1="47.7" x2="446" y2="47.7" class="grid"/><text x="42" y="51.7" class="tick" text-anchor="end">550</text>
+<line x1="48" y1="12.0" x2="446" y2="12.0" class="grid"/><text x="42" y="16.0" class="tick" text-anchor="end">600</text>
+<text x="48.0" y="242" class="tick" text-anchor="middle">0</text>
+<text x="114.3" y="242" class="tick" text-anchor="middle">500</text>
+<text x="180.7" y="242" class="tick" text-anchor="middle">1000</text>
+<text x="247.0" y="242" class="tick" text-anchor="middle">1500</text>
+<text x="313.3" y="242" class="tick" text-anchor="middle">2000</text>
+<text x="379.7" y="242" class="tick" text-anchor="middle">2500</text>
+<text x="446.0" y="242" class="tick" text-anchor="middle">3000</text>
+<line x1="48" y1="118.4" x2="446" y2="118.4" class="baseline"/><text x="442" y="113.4" class="lbl-muted" text-anchor="end" style="fill:var(--bad)">方案一 451 s</text>
+<line x1="127.6" y1="12" x2="127.6" y2="226" class="axis" stroke-dasharray="2 3"/><text x="131.6" y="24" class="lbl-muted">采用 x=600</text>
+<polyline points="48.0,205.9 67.9,183.0 87.8,175.9 107.7,163.0 127.6,136.6 154.1,87.9 180.7,63.6 247.0,44.3 313.3,34.3 446.0,31.9" class="lineinf"/>
+<circle cx="48.0" cy="205.9" r="3.5" class="ptinf"><title>x=0 m，不设 r_ok：328 s/源</title></circle>
+<circle cx="67.9" cy="183.0" r="3.5" class="ptinf"><title>x=150 m，不设 r_ok：360 s/源</title></circle>
+<circle cx="87.8" cy="175.9" r="3.5" class="ptinf"><title>x=300 m，不设 r_ok：370 s/源</title></circle>
+<circle cx="107.7" cy="163.0" r="3.5" class="ptinf"><title>x=450 m，不设 r_ok：388 s/源</title></circle>
+<circle cx="127.6" cy="136.6" r="3.5" class="ptinf"><title>x=600 m，不设 r_ok：425 s/源</title></circle>
+<circle cx="154.1" cy="87.9" r="3.5" class="ptinf"><title>x=800 m，不设 r_ok：494 s/源</title></circle>
+<circle cx="180.7" cy="63.6" r="3.5" class="ptinf"><title>x=1000 m，不设 r_ok：528 s/源</title></circle>
+<circle cx="247.0" cy="44.3" r="3.5" class="ptinf"><title>x=1500 m，不设 r_ok：555 s/源</title></circle>
+<circle cx="313.3" cy="34.3" r="3.5" class="ptinf"><title>x=2000 m，不设 r_ok：569 s/源</title></circle>
+<circle cx="446.0" cy="31.9" r="3.5" class="ptinf"><title>x=3000 m，不设 r_ok：572 s/源</title></circle>
+<polyline points="48.0,205.9 67.9,206.0 87.8,207.7 107.7,204.0 127.6,200.6 154.1,199.0 180.7,193.0 247.0,180.3 313.3,173.9 446.0,168.9" class="line150"/>
+<circle cx="48.0" cy="205.9" r="3.5" class="pt150"><title>x=0 m，r_ok=150 m：328 s/源</title></circle>
+<circle cx="67.9" cy="206.0" r="3.5" class="pt150"><title>x=150 m，r_ok=150 m：328 s/源</title></circle>
+<circle cx="87.8" cy="207.7" r="3.5" class="pt150"><title>x=300 m，r_ok=150 m：326 s/源</title></circle>
+<circle cx="107.7" cy="204.0" r="3.5" class="pt150"><title>x=450 m，r_ok=150 m：331 s/源</title></circle>
+<circle cx="127.6" cy="200.6" r="3.5" class="pt150"><title>x=600 m，r_ok=150 m：336 s/源</title></circle>
+<circle cx="154.1" cy="199.0" r="3.5" class="pt150"><title>x=800 m，r_ok=150 m：338 s/源</title></circle>
+<circle cx="180.7" cy="193.0" r="3.5" class="pt150"><title>x=1000 m，r_ok=150 m：346 s/源</title></circle>
+<circle cx="247.0" cy="180.3" r="3.5" class="pt150"><title>x=1500 m，r_ok=150 m：364 s/源</title></circle>
+<circle cx="313.3" cy="173.9" r="3.5" class="pt150"><title>x=2000 m，r_ok=150 m：373 s/源</title></circle>
+<circle cx="446.0" cy="168.9" r="3.5" class="pt150"><title>x=3000 m，r_ok=150 m：380 s/源</title></circle>
+<text x="442.0" y="184.9" class="lbl" text-anchor="end">r_ok = 150 m</text>
+<text x="442.0" y="23.9" class="lbl" text-anchor="end">不设 r_ok</text>
+<text x="247.0" y="258" class="lbl-muted" text-anchor="middle">x：顺路清除的绕行阈值（m）</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">问题四（27 点格网）每源平均（s）</p><svg viewBox="0 0 460 260" class="fig-svg" role="img" aria-label="问题四 x 扫描">
+<rect x="48" y="12" width="398" height="214" class="plot-bg"/>
+<line x1="48" y1="226.0" x2="446" y2="226.0" class="grid"/><text x="42" y="230.0" class="tick" text-anchor="end">700</text>
+<line x1="48" y1="199.2" x2="446" y2="199.2" class="grid"/><text x="42" y="203.2" class="tick" text-anchor="end">750</text>
+<line x1="48" y1="172.5" x2="446" y2="172.5" class="grid"/><text x="42" y="176.5" class="tick" text-anchor="end">800</text>
+<line x1="48" y1="145.8" x2="446" y2="145.8" class="grid"/><text x="42" y="149.8" class="tick" text-anchor="end">850</text>
+<line x1="48" y1="119.0" x2="446" y2="119.0" class="grid"/><text x="42" y="123.0" class="tick" text-anchor="end">900</text>
+<line x1="48" y1="92.2" x2="446" y2="92.2" class="grid"/><text x="42" y="96.2" class="tick" text-anchor="end">950</text>
+<line x1="48" y1="65.5" x2="446" y2="65.5" class="grid"/><text x="42" y="69.5" class="tick" text-anchor="end">1000</text>
+<line x1="48" y1="38.8" x2="446" y2="38.8" class="grid"/><text x="42" y="42.8" class="tick" text-anchor="end">1050</text>
+<line x1="48" y1="12.0" x2="446" y2="12.0" class="grid"/><text x="42" y="16.0" class="tick" text-anchor="end">1100</text>
+<text x="48.0" y="242" class="tick" text-anchor="middle">0</text>
+<text x="114.3" y="242" class="tick" text-anchor="middle">500</text>
+<text x="180.7" y="242" class="tick" text-anchor="middle">1000</text>
+<text x="247.0" y="242" class="tick" text-anchor="middle">1500</text>
+<text x="313.3" y="242" class="tick" text-anchor="middle">2000</text>
+<text x="379.7" y="242" class="tick" text-anchor="middle">2500</text>
+<text x="446.0" y="242" class="tick" text-anchor="middle">3000</text>
+<line x1="48" y1="77.6" x2="446" y2="77.6" class="baseline"/><text x="442" y="72.6" class="lbl-muted" text-anchor="end" style="fill:var(--bad)">方案一 977 s</text>
+<line x1="127.6" y1="12" x2="127.6" y2="226" class="axis" stroke-dasharray="2 3"/><text x="131.6" y="24" class="lbl-muted">采用 x=600</text>
+<polyline points="48.0,183.9 67.9,160.0 87.8,156.0 107.7,146.5 127.6,134.1 154.1,114.8 180.7,98.0 247.0,59.2 313.3,40.6 446.0,31.8" class="lineinf"/>
+<circle cx="48.0" cy="183.9" r="3.5" class="ptinf"><title>x=0 m，不设 r_ok：779 s/源</title></circle>
+<circle cx="67.9" cy="160.0" r="3.5" class="ptinf"><title>x=150 m，不设 r_ok：823 s/源</title></circle>
+<circle cx="87.8" cy="156.0" r="3.5" class="ptinf"><title>x=300 m，不设 r_ok：831 s/源</title></circle>
+<circle cx="107.7" cy="146.5" r="3.5" class="ptinf"><title>x=450 m，不设 r_ok：849 s/源</title></circle>
+<circle cx="127.6" cy="134.1" r="3.5" class="ptinf"><title>x=600 m，不设 r_ok：872 s/源</title></circle>
+<circle cx="154.1" cy="114.8" r="3.5" class="ptinf"><title>x=800 m，不设 r_ok：908 s/源</title></circle>
+<circle cx="180.7" cy="98.0" r="3.5" class="ptinf"><title>x=1000 m，不设 r_ok：939 s/源</title></circle>
+<circle cx="247.0" cy="59.2" r="3.5" class="ptinf"><title>x=1500 m，不设 r_ok：1012 s/源</title></circle>
+<circle cx="313.3" cy="40.6" r="3.5" class="ptinf"><title>x=2000 m，不设 r_ok：1046 s/源</title></circle>
+<circle cx="446.0" cy="31.8" r="3.5" class="ptinf"><title>x=3000 m，不设 r_ok：1063 s/源</title></circle>
+<polyline points="48.0,183.9 67.9,199.2 87.8,199.8 107.7,202.3 127.6,201.9 154.1,200.8 180.7,199.1 247.0,183.1 313.3,173.4 446.0,167.0" class="line150"/>
+<circle cx="48.0" cy="183.9" r="3.5" class="pt150"><title>x=0 m，r_ok=150 m：779 s/源</title></circle>
+<circle cx="67.9" cy="199.2" r="3.5" class="pt150"><title>x=150 m，r_ok=150 m：750 s/源</title></circle>
+<circle cx="87.8" cy="199.8" r="3.5" class="pt150"><title>x=300 m，r_ok=150 m：749 s/源</title></circle>
+<circle cx="107.7" cy="202.3" r="3.5" class="pt150"><title>x=450 m，r_ok=150 m：744 s/源</title></circle>
+<circle cx="127.6" cy="201.9" r="3.5" class="pt150"><title>x=600 m，r_ok=150 m：745 s/源</title></circle>
+<circle cx="154.1" cy="200.8" r="3.5" class="pt150"><title>x=800 m，r_ok=150 m：747 s/源</title></circle>
+<circle cx="180.7" cy="199.1" r="3.5" class="pt150"><title>x=1000 m，r_ok=150 m：750 s/源</title></circle>
+<circle cx="247.0" cy="183.1" r="3.5" class="pt150"><title>x=1500 m，r_ok=150 m：780 s/源</title></circle>
+<circle cx="313.3" cy="173.4" r="3.5" class="pt150"><title>x=2000 m，r_ok=150 m：798 s/源</title></circle>
+<circle cx="446.0" cy="167.0" r="3.5" class="pt150"><title>x=3000 m，r_ok=150 m：810 s/源</title></circle>
+<text x="442.0" y="183.0" class="lbl" text-anchor="end">r_ok = 150 m</text>
+<text x="442.0" y="23.8" class="lbl" text-anchor="end">不设 r_ok</text>
+<text x="247.0" y="258" class="lbl-muted" text-anchor="middle">x：顺路清除的绕行阈值（m）</text>
+</svg></div></figure>
+  </div>
+  <div class="verdict prose">
+    <div class="vrow"><span class="chip good">r_ok 必须有</span><p>不设 r_ok 时，x 越大越糟：机器狗会跑去清一个只知道方向的源，到了还得现场慢慢找。设 r_ok=150 m 后，曲线在很宽的范围内都很平。</p></div>
+    <div class="vrow"><span class="chip warn">x 可以再小</span><p>换成正八边形之后，问题三的最优点移到 x≈300 m（326 s/源），比交接材料里的默认值 600 m（336 s/源）再快约 3%；问题四在 300–800 m 之间几乎一样。建议把默认 x 改为 300 m。</p></div>
+    <div class="vrow"><span class="chip bad">顺带补测不能关</span><p>覆盖点上顺带测已发现源的方位，关掉后问题三升到 575 s/源、问题四升到 1085 s/源，比方案一还慢。推迟清除之所以划算，全靠后面的覆盖点替它交会定位。</p></div>
+  </div>
+  <figure class="fig"><div class="panel"><p class="panel-title">问题三：覆盖网形状（x=600 m，r_ok=150 m）</p><svg viewBox="0 0 560 214" class="fig-svg" role="img" aria-label="问题三不同覆盖网的每源时间">
+<text x="180" y="22" class="lbl" text-anchor="end">7点（中心+6边形 1200 m）</text><text x="180" y="37" class="lbl-muted" text-anchor="end">7 点 · 巡回 7.2 km</text>
+<rect x="190" y="14" width="223.2" height="20" rx="3" class="hbar "><title>7点（中心+6边形 1200 m）：346.2 s/源</title></rect><text x="419.2" y="29" class="tick" style="font-size:12px">346 s</text>
+<text x="180" y="62" class="lbl" text-anchor="end">8边形 950 m</text><text x="180" y="77" class="lbl-muted" text-anchor="end">8 点 · 巡回 6.0 km</text>
+<rect x="190" y="54" width="163.9" height="20" rx="3" class="hbar "><title>8边形 950 m：333.9 s/源</title></rect><text x="359.9" y="69" class="tick" style="font-size:12px">334 s</text>
+<text x="180" y="102" class="lbl" text-anchor="end">8边形 974 m（采用）</text><text x="180" y="117" class="lbl-muted" text-anchor="end">8 点 · 巡回 6.2 km</text>
+<rect x="190" y="94" width="172.3" height="20" rx="3" class="hbar sel"><title>8边形 974 m（采用）：335.7 s/源</title></rect><text x="368.3" y="109" class="tick" style="font-size:12px">336 s</text>
+<text x="180" y="142" class="lbl" text-anchor="end">10边形 890 m</text><text x="180" y="157" class="lbl-muted" text-anchor="end">10 点 · 巡回 5.8 km</text>
+<rect x="190" y="134" width="168.9" height="20" rx="3" class="hbar "><title>10边形 890 m：334.9 s/源</title></rect><text x="364.9" y="149" class="tick" style="font-size:12px">335 s</text>
+<text x="180" y="182" class="lbl" text-anchor="end">12边形 860 m</text><text x="180" y="197" class="lbl-muted" text-anchor="end">12 点 · 巡回 5.8 km</text>
+<rect x="190" y="174" width="204.0" height="20" rx="3" class="hbar "><title>12边形 860 m：342.2 s/源</title></rect><text x="400.0" y="189" class="tick" style="font-size:12px">342 s</text>
+<text x="190" y="212" class="lbl-muted">横轴从 300 s 起</text>
+</svg></div>
+  <figcaption>去掉中心点、用更小的多边形环，巡回从 7.2 km 缩到 5.8–6.2 km。但点越多、每个频道要测的次数越多，12 边形就开始得不偿失。8 边形取 974 m 而不是 950 m，是为了让最坏覆盖距离留出约 26 m 余量（974.3 m &lt; 1000 m）。</figcaption></figure>
+</section>
+
+<section id="caveat">
+  <div class="sec-head"><div class="eyebrow">要注意</div><h2>方案三不是处处更快</h2></div>
+  <div class="verdict prose">
+    <div class="vrow"><span class="chip warn">问题四 N=16</span><p>方案一“发现即清”，清满 16 个就能提前收工，不必走完所有格点；方案三要等覆盖走完才集中清，于是 N=16 时平均 498 → 590 s/源，反而变慢。我试过“发现 16 个就停止覆盖”，结果更慢（问题三 336 → 363，问题四 745 → 755），因为剩下的源少了后续覆盖点的方位，定位变难。这里还有优化空间。</p></div>
+    <div class="vrow"><span class="chip warn">问题四仍有 8 局更慢</span><p>多数是定向源：后续覆盖点在它背后测不到，补测没信号，只能多走或兜底。</p></div>
+    <div class="vrow"><span class="chip warn">仿真≠模拟器</span><p>所有数字来自本地仿真和交接脚本的误差模型。x、r_ok、补测夹角等参数要在官方演练里再确认一次。</p></div>
+  </div>
+</section>
+
+<footer class="prose">
+  <span>代码：code/experiments/参数扫描_顺路清除x.py、调度改进原型.py；方案一：code/baseline/最终方案验证.py。方案三参数：问题三正八边形 974 m，问题四 h=990 m 格网 27 点，x=600 m，r_ok=150 m，顺带补测夹角 ≥25°。</span>
+  <span>所有时间均为模拟器规则下的虚拟时间，由本地仿真得出，不代表官方演练或正式测试成绩。</span>
+</footer>
+</div>
+</body></html>
