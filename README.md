@@ -31,7 +31,9 @@ code/
     方案三_参数扫描.py             方案三主循环 solve_x() 及 x、r_ok、补测、覆盖网的参数扫描
     方案三_运行.py                 按采用参数运行方案三，并与方案一对比
     results/                       各脚本输出，文件名同样带方案编号
-  solver/     正式参赛程序（待实现：官方客户端 + 策略 A/B）
+  solver/
+    mocksim/                       本地 mock 模拟器（按附件2实现）+ 示例客户端 + 协议一致性自测
+                                   官方客户端与策略 A/B 待实现
 ```
 
 ## 当前结果（本地仿真，问题三、四各 30 局）
@@ -60,6 +62,13 @@ python code\experiments\方案三_参数扫描.py
 
 # 方案二 原型与方案一对比（数分钟）
 python code\experiments\方案二_调度改进原型.py
+
+# 本地 mock 模拟器：协议一致性自测（约 25 s）
+python code\solver\mocksim\conformance_test.py
+
+# 本地 mock 模拟器：起一局问题三，另开窗口用附件2 §11 示例客户端打一遍
+python code\solver\mocksim\server.py --problem 3 --n 13 --seed 1 --robot-id TEST-TEAM
+python code\solver\mocksim\demo_client.py --base http://127.0.0.1:2026 --robot-id TEST-TEAM
 ```
 
 所有时间均为按模拟器规则计算的虚拟时间，来自本地仿真，不是官方演练或正式测试成绩。
