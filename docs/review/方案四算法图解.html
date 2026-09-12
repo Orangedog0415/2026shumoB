@@ -1,0 +1,667 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>方案四算法图解</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#f2f4f5; --panel:#fbfcfc; --ink:#14202a; --ink-2:#44515c; --muted:#6b7883; --rule:#d4dbe0; --rule-2:#e6ebee;
+  --accent:#0c6a77; --accent-soft:#dcecee;
+  --good:#1b7a3d; --good-bg:#e2f1e7; --warn:#935800; --warn-bg:#f8ecd6; --bad:#b0271f; --bad-bg:#f8e1df;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --q5:#184f95; --q4:#2a78d6; --q3:#5598e7; --q2:#9ec5f4; --q1:#cde2fb; --unsafe:#e9ecee;
+  --wedge:rgba(12,106,119,.16);
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10161b; --panel:#161f26; --ink:#e4eaee; --ink-2:#b3bfc7; --muted:#8997a2; --rule:#2b3741; --rule-2:#212b33;
+    --accent:#52b6c2; --accent-soft:#16343a;
+    --good:#5fc383; --good-bg:#15301f; --warn:#e3a547; --warn-bg:#33260f; --bad:#f0736a; --bad-bg:#3a1a18;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --q5:#86b6ef; --q4:#5598e7; --q3:#2a78d6; --q2:#1c5cab; --q1:#104281; --unsafe:#1d262d;
+    --wedge:rgba(82,182,194,.18); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --ground:#10161b; --panel:#161f26; --ink:#e4eaee; --ink-2:#b3bfc7; --muted:#8997a2; --rule:#2b3741; --rule-2:#212b33;
+    --accent:#52b6c2; --accent-soft:#16343a;
+    --good:#5fc383; --good-bg:#15301f; --warn:#e3a547; --warn-bg:#33260f; --bad:#f0736a; --bad-bg:#3a1a18;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --q5:#86b6ef; --q4:#5598e7; --q3:#2a78d6; --q2:#1c5cab; --q1:#104281; --unsafe:#1d262d;
+    --wedge:rgba(82,182,194,.18); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:16px/1.75 var(--sans);margin:0;padding-block:40px 72px;padding-inline:20px}
+.wrap{max-width:1000px;margin:0 auto}
+.prose{max-width:720px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:2.35rem;letter-spacing:.01em}
+h2{font-size:1.7rem}
+h3{font-size:1.1rem;font-family:var(--sans);font-weight:700}
+p{margin:0}
+.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.lede{color:var(--ink-2);font-size:1.05rem;margin-top:14px}
+.meta{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:.85rem}
+header{display:grid;gap:4px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
+nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:18px;font-size:.9rem}
+nav a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover,nav a:focus-visible{border-bottom-color:var(--accent);outline:none}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{padding-block:44px;border-bottom:1px solid var(--rule);display:grid;gap:22px}
+.sec-head{display:grid;gap:6px}
+.block{display:grid;gap:10px}
+.block-label{font-size:.78rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+blockquote{margin:0;padding:14px 18px;background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;color:var(--ink-2);font-family:var(--serif);font-size:1rem;line-height:1.85}
+blockquote .src{display:block;margin-top:6px;font-family:var(--sans);font-size:.78rem;color:var(--muted)}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px}
+ol.steps li::marker{font-family:var(--mono);color:var(--accent)}
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.fig{display:grid;gap:10px;margin:0}
+.fig-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.fig-svg{width:100%;height:auto;display:block;max-width:100%}
+figcaption{font-size:.85rem;color:var(--muted);max-width:720px}
+.panel{background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;padding:10px}
+.panel-title{font-size:.8rem;color:var(--ink-2);margin:0 0 6px 2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--rule-2);border:1px solid var(--rule-2);border-radius:4px;overflow:hidden}
+.stat{background:var(--panel);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.stat .v{font-family:var(--mono);font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat .k{font-size:.8rem;color:var(--muted);line-height:1.5}
+.verdict{display:grid;gap:12px}
+.vrow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.04em;line-height:1.7}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.good{color:var(--good);background:var(--good-bg)} .warn{color:var(--warn);background:var(--warn-bg)} .bad{color:var(--bad);background:var(--bad-bg)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule-2);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+th{font-size:.78rem;letter-spacing:.08em;color:var(--muted);font-weight:700;background:var(--panel)}
+tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--ink-2);align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+.sw.line{height:3px;width:18px;border-radius:2px;vertical-align:3px}
+.callout{border-left:3px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink-2)}
+/* svg */
+.plot-bg{fill:var(--panel)}
+.grid{stroke:var(--rule-2);stroke-width:1}
+.tick{fill:var(--muted);font:11px var(--mono)}
+.lbl{fill:var(--ink);font:12px var(--sans);font-weight:500}
+.lbl-bad{fill:var(--bad)}
+.station{fill:var(--ink)}
+.wedge{fill:var(--wedge);stroke:var(--accent);stroke-width:.8}
+.zoombox{fill:none;stroke:var(--bad);stroke-width:1.2}
+.edge{stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3;fill:none}
+.region{fill:var(--wedge);stroke:var(--accent);stroke-width:2}
+.dcircle{fill:none;stroke:var(--ink-2);stroke-width:1.5}
+.diam{stroke:var(--ink);stroke-width:2}
+.mid{fill:var(--ink)}
+.farline{stroke:var(--bad);stroke-width:1.2;stroke-dasharray:3 3}
+.farpt{fill:var(--bad);stroke:var(--panel);stroke-width:2}
+.scale{stroke:var(--ink-2);stroke-width:2}
+.unsafe{fill:var(--unsafe)}
+.cell{stroke:none}
+.cell.b1{fill:var(--q1)} .cell.b2{fill:var(--q2)} .cell.b3{fill:var(--q3)} .cell.b4{fill:var(--q4)} .cell.b5{fill:var(--q5)}
+.cell.sel{stroke:var(--s2);stroke-width:2}
+.cell:hover,.unsafe:hover{stroke:var(--ink);stroke-width:2}
+.wedgeline{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-dasharray:5 3}
+.pick{fill:var(--s2);stroke:var(--panel);stroke-width:2}
+.disk{fill:none;stroke:var(--ink-2);stroke-width:1.3}
+.cov{fill:var(--wedge);stroke:none;opacity:.55}
+.path{stroke-width:1.6;stroke-linecap:round;fill:none}
+.ph-scan{stroke:var(--s1)} .ph-fast{stroke:var(--s2)} .ph-fallback{stroke:var(--s3);stroke-width:3}
+.netpt{fill:var(--panel);stroke:var(--ink);stroke-width:1.5}
+.src{fill:var(--panel);stroke:var(--ink);stroke-width:1.8}
+.src-d{fill:var(--ink)}
+.dirarrow{stroke:var(--ink-2);stroke-width:1.2}
+.arrowhead{fill:var(--ink-2)}
+.origin{fill:var(--bad)}
+/* bars */
+.bars{display:grid;gap:14px}
+.bar-row{display:grid;grid-template-columns:4.5em 1fr;gap:12px;align-items:center}
+.bar-name{font-weight:700;font-size:.9rem}
+.bar{display:flex;gap:2px;height:26px}
+.seg{height:100%;min-width:3px}
+.seg:first-child{border-radius:4px 0 0 4px}.seg:last-child{border-radius:0 4px 4px 0}
+.seg.m{background:var(--s1)} .seg.d{background:var(--s2)} .seg.w{background:var(--s3)} .seg.c{background:var(--s4)}
+.bar-total{font-family:var(--mono);font-size:.82rem;color:var(--ink-2);margin-top:4px}
+footer{padding-top:28px;color:var(--muted);font-size:.85rem;display:grid;gap:6px}
+@media (max-width:560px){h1{font-size:1.8rem}h2{font-size:1.4rem}.vrow{grid-template-columns:1fr}}
+
+.ph-go{stroke:var(--s2)} .ph-final{stroke:var(--s3)} .ph-fallback{stroke:var(--s4);stroke-width:3.2}
+.ph-scan{stroke:var(--s1)}
+.axis{stroke:var(--rule);stroke-width:1}
+.dot{stroke:var(--panel);stroke-width:1.5}
+.dot.n10{fill:var(--s1)} .dot.n13{fill:var(--s2)} .dot.n16{fill:var(--s3)}
+.diag{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.line150{fill:none;stroke:var(--s1);stroke-width:2}
+.lineinf{fill:none;stroke:var(--s2);stroke-width:2}
+.pt150{fill:var(--s1);stroke:var(--panel);stroke-width:2} .ptinf{fill:var(--s2);stroke:var(--panel);stroke-width:2}
+.baseline{stroke:var(--bad);stroke-width:1.2;stroke-dasharray:5 4}
+.lbl-muted{fill:var(--muted);font:11px var(--sans)}
+.ell1{fill:var(--wedge);stroke:var(--s2);stroke-width:1.5}
+.ell2{fill:none;stroke:var(--s2);stroke-width:1.2;stroke-dasharray:5 4}
+.route{stroke:var(--s1);stroke-width:2.2}
+.det{stroke:var(--s2);stroke-width:2;fill:none}
+.src-ok{fill:var(--good)} .src-wait{fill:var(--panel);stroke:var(--ink);stroke-width:1.8} .src-far{fill:var(--ink)}
+.region-big{fill:none;stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:3 3}
+.wf-bar{fill:var(--s1)} .wf-base{fill:var(--muted)} .wf-final{fill:var(--good)}
+.hbar{fill:var(--s1)} .hbar.sel{fill:var(--good)}
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.bigstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.big{background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;padding:16px 18px;display:grid;gap:4px}
+.big .q{font-size:.8rem;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.big .v{font-family:var(--mono);font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.big .v small{font-size:1rem;color:var(--muted)}
+.big .d{font-family:var(--mono);color:var(--good);font-weight:500}
+.big .k{font-size:.82rem;color:var(--muted)}
+
+.axis{stroke:var(--rule);stroke-width:1}
+.lbl-muted{fill:var(--muted);font:11px var(--sans)}
+.bar1{fill:var(--muted)} .bar3{fill:var(--s1)} .bar4{fill:var(--good)} .barx{fill:var(--bad)}
+.dot{stroke:var(--panel);stroke-width:1.5}
+.pt-a{fill:var(--muted)} .pt-b{fill:var(--s1)} .pt-ok{fill:var(--good)} .pt-bad{fill:var(--bad)}
+.line-run{fill:none;stroke:var(--s1);stroke-width:2}
+.line-de{fill:none;stroke-width:1.8}
+.de1{stroke:var(--s1)} .de2{stroke:var(--s2)} .de3{stroke:var(--s3)} .de4{stroke:var(--s4)}
+.evalpt{fill:var(--s2);opacity:.75}
+.limit{stroke:var(--bad);stroke-width:1.2;stroke-dasharray:5 4}
+.route-nn{stroke:var(--muted);stroke-width:2;fill:none}
+.route-alns{stroke:var(--good);stroke-width:2;fill:none}
+.netpt2{fill:var(--panel);stroke:var(--ink);stroke-width:1.3}
+.missdot{fill:var(--bad);opacity:.6}
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;align-items:start}
+.bigstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.big{background:var(--panel);border:1px solid var(--rule-2);border-radius:4px;padding:16px 18px;display:grid;gap:4px}
+.big .q{font-size:.8rem;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.big .v{font-family:var(--mono);font-size:1.8rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.big .v small{font-size:.95rem;color:var(--muted)}
+.big .d{font-family:var(--mono);color:var(--good);font-weight:500}
+.big .k{font-size:.82rem;color:var(--muted)}
+</style>
+<div class="wrap">
+<header>
+  <div class="eyebrow">2026 国赛 · B题 · 问题三、四</div>
+  <h1>方案四：四种优化算法的取舍</h1>
+  <p class="lede prose">在方案三上逐项试了《优化算法》建议的四类方法——贝叶斯优化调参、集合覆盖压缩覆盖点、ALNS 排清除顺序、两步前瞻选任务，另外用差分进化复算了问题二。采用三项，否掉一项。</p>
+  <div class="meta"><span>训练集 cases(1)，验证集 cases(202)/cases(777)，各 30 局</span><span>本地仿真，不是官方成绩</span><span>2026-09-12</span></div>
+  <nav aria-label="页内导航"><a href="#result">结果</a><a href="#ablate">逐项消融</a><a href="#bo">贝叶斯优化</a><a href="#cover">覆盖网</a><a href="#alns">ALNS</a><a href="#beam">被否掉的 beam</a><a href="#de">问题二 DE</a></nav>
+</header>
+
+<section id="result">
+  <div class="sec-head"><div class="eyebrow">结果</div><h2>每源平均时间：比交接版少三成</h2></div>
+  <div class="bigstat">
+    <div class="big"><span class="q">问题三 · 每源平均</span><span class="v">450.8 → 300.5<small> s</small></span><span class="d">−33.3%</span><span class="k">两批未参与调参的案例：305.8 / 300.7 s</span></div>
+    <div class="big"><span class="q">问题四 · 每源平均</span><span class="v">977.4 → 688.9<small> s</small></span><span class="d">−29.5%</span><span class="k">两批未参与调参的案例：696.2 / 689.7 s</span></div>
+    <div class="big"><span class="q">保证没动</span><span class="v">240 / 240</span><span class="d">压力测试全部清除</span><span class="k">覆盖证书、状态机、75×3 兜底与方案一相同</span></div>
+  </div>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">问题三 每源平均（s）· 柱为训练集，黑点为两批验证集</p><svg viewBox="0 0 480 182" class="fig-svg" role="img" aria-label="问题三三套方案对比">
+<text x="56" y="30" class="lbl" text-anchor="end">方案一</text>
+<rect x="64" y="16" width="325.0" height="20" rx="3" class="bar1"><title>方案一：训练集 450.8 s/源</title></rect>
+<text x="395.0" y="31" class="tick" style="font-size:12px">451 s</text>
+<circle cx="387.1" cy="26" r="3.5" class="dot" fill="var(--ink)"><title>验证集 448.3 s/源</title></circle>
+<circle cx="386.6" cy="26" r="3.5" class="dot" fill="var(--ink)"><title>验证集 447.5 s/源</title></circle>
+<text x="64" y="52" class="lbl-muted">验证集 448 / 448 s</text>
+<text x="56" y="82" class="lbl" text-anchor="end">方案三</text>
+<rect x="64" y="68" width="242.0" height="20" rx="3" class="bar3"><title>方案三：训练集 335.7 s/源</title></rect>
+<text x="312.0" y="83" class="tick" style="font-size:12px">336 s</text>
+<circle cx="307.7" cy="78" r="3.5" class="dot" fill="var(--ink)"><title>验证集 338.1 s/源</title></circle>
+<circle cx="301.2" cy="78" r="3.5" class="dot" fill="var(--ink)"><title>验证集 329.0 s/源</title></circle>
+<text x="64" y="104" class="lbl-muted">验证集 338 / 329 s</text>
+<text x="56" y="134" class="lbl" text-anchor="end">方案四</text>
+<rect x="64" y="120" width="216.6" height="20" rx="3" class="bar4"><title>方案四：训练集 300.5 s/源</title></rect>
+<text x="286.6" y="135" class="tick" style="font-size:12px">300 s</text>
+<circle cx="284.4" cy="130" r="3.5" class="dot" fill="var(--ink)"><title>验证集 305.8 s/源</title></circle>
+<circle cx="280.8" cy="130" r="3.5" class="dot" fill="var(--ink)"><title>验证集 300.7 s/源</title></circle>
+<text x="64" y="156" class="lbl-muted">验证集 306 / 301 s</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">问题四 每源平均（s）</p><svg viewBox="0 0 480 182" class="fig-svg" role="img" aria-label="问题四三套方案对比">
+<text x="56" y="30" class="lbl" text-anchor="end">方案一</text>
+<rect x="64" y="16" width="322.1" height="20" rx="3" class="bar1"><title>方案一：训练集 977.4 s/源</title></rect>
+<text x="392.1" y="31" class="tick" style="font-size:12px">977 s</text>
+<circle cx="398.9" cy="26" r="3.5" class="dot" fill="var(--ink)"><title>验证集 1016.4 s/源</title></circle>
+<circle cx="390.5" cy="26" r="3.5" class="dot" fill="var(--ink)"><title>验证集 990.9 s/源</title></circle>
+<text x="64" y="52" class="lbl-muted">验证集 1016 / 991 s</text>
+<text x="56" y="82" class="lbl" text-anchor="end">方案三</text>
+<rect x="64" y="68" width="245.5" height="20" rx="3" class="bar3"><title>方案三：训练集 745.0 s/源</title></rect>
+<text x="315.5" y="83" class="tick" style="font-size:12px">745 s</text>
+<circle cx="308.1" cy="78" r="3.5" class="dot" fill="var(--ink)"><title>验证集 740.8 s/源</title></circle>
+<circle cx="312.0" cy="78" r="3.5" class="dot" fill="var(--ink)"><title>验证集 752.5 s/源</title></circle>
+<text x="64" y="104" class="lbl-muted">验证集 741 / 752 s</text>
+<text x="56" y="134" class="lbl" text-anchor="end">方案四</text>
+<rect x="64" y="120" width="227.0" height="20" rx="3" class="bar4"><title>方案四：训练集 688.9 s/源</title></rect>
+<text x="297.0" y="135" class="tick" style="font-size:12px">689 s</text>
+<circle cx="293.4" cy="130" r="3.5" class="dot" fill="var(--ink)"><title>验证集 696.2 s/源</title></circle>
+<circle cx="291.3" cy="130" r="3.5" class="dot" fill="var(--ink)"><title>验证集 689.7 s/源</title></circle>
+<text x="64" y="156" class="lbl-muted">验证集 696 / 690 s</text>
+</svg></div></figure>
+  </div>
+  <p class="prose">逐局看，方案四在问题三 89/90 局、问题四 80/90 局快于方案三。</p>
+</section>
+
+<section id="ablate">
+  <div class="sec-head"><div class="eyebrow">逐项消融</div><h2>哪一项真的有用</h2></div>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">问题三（红线 = 方案三基线）</p><svg viewBox="0 0 520 264" class="fig-svg" role="img" aria-label="问题三消融">
+<line x1="426.2" y1="6" x2="426.2" y2="248" class="limit"/>
+<text x="192" y="28" class="lbl" text-anchor="end">方案三 基线</text>
+<rect x="200" y="14" width="226.2" height="19" rx="3" class="bar3"><title>方案三 基线：335.7 s/源</title></rect>
+<text x="432.2" y="28" class="tick" style="font-size:12px">336</text>
+<text x="192" y="68" class="lbl" text-anchor="end">3.1 贝叶斯优化参数</text>
+<rect x="200" y="54" width="205.8" height="19" rx="3" class="bar4"><title>3.1 贝叶斯优化参数：305.5 s/源</title></rect>
+<text x="411.8" y="68" class="tick" style="font-size:12px">306  -30</text>
+<text x="192" y="108" class="lbl" text-anchor="end">3.2 h=950 覆盖网</text>
+<rect x="200" y="94" width="226.2" height="19" rx="3" class="bar4"><title>3.2 h=950 覆盖网：335.7 s/源</title></rect>
+<text x="432.2" y="108" class="tick" style="font-size:12px">336  +0</text>
+<text x="192" y="148" class="lbl" text-anchor="end">3.3b 清除顺序用 ALNS</text>
+<rect x="200" y="134" width="221.0" height="19" rx="3" class="bar4"><title>3.3b 清除顺序用 ALNS：328.1 s/源</title></rect>
+<text x="427.0" y="148" class="tick" style="font-size:12px">328  -8</text>
+<text x="192" y="188" class="lbl" text-anchor="end">3.3a 两步前瞻 beam</text>
+<rect x="200" y="174" width="241.0" height="19" rx="3" class="barx"><title>3.3a 两步前瞻 beam：357.7 s/源</title></rect>
+<text x="447.0" y="188" class="tick" style="font-size:12px">358  +22</text>
+<text x="192" y="228" class="lbl" text-anchor="end">方案四 = 3.1+3.2+3.3b</text>
+<rect x="200" y="214" width="202.4" height="19" rx="3" class="bar4"><title>方案四 = 3.1+3.2+3.3b：300.5 s/源</title></rect>
+<text x="408.4" y="228" class="tick" style="font-size:12px">300  -35</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">问题四</p><svg viewBox="0 0 520 264" class="fig-svg" role="img" aria-label="问题四消融">
+<line x1="438.4" y1="6" x2="438.4" y2="248" class="limit"/>
+<text x="192" y="28" class="lbl" text-anchor="end">方案三 基线</text>
+<rect x="200" y="14" width="238.4" height="19" rx="3" class="bar3"><title>方案三 基线：745.0 s/源</title></rect>
+<text x="444.4" y="28" class="tick" style="font-size:12px">745</text>
+<text x="192" y="68" class="lbl" text-anchor="end">3.1 贝叶斯优化参数</text>
+<rect x="200" y="54" width="229.1" height="19" rx="3" class="bar4"><title>3.1 贝叶斯优化参数：715.8 s/源</title></rect>
+<text x="435.1" y="68" class="tick" style="font-size:12px">716  -29</text>
+<text x="192" y="108" class="lbl" text-anchor="end">3.2 h=950 覆盖网</text>
+<rect x="200" y="94" width="227.0" height="19" rx="3" class="bar4"><title>3.2 h=950 覆盖网：709.4 s/源</title></rect>
+<text x="433.0" y="108" class="tick" style="font-size:12px">709  -36</text>
+<text x="192" y="148" class="lbl" text-anchor="end">3.3b 清除顺序用 ALNS</text>
+<rect x="200" y="134" width="236.9" height="19" rx="3" class="bar4"><title>3.3b 清除顺序用 ALNS：740.4 s/源</title></rect>
+<text x="442.9" y="148" class="tick" style="font-size:12px">740  -5</text>
+<text x="192" y="188" class="lbl" text-anchor="end">3.3a 两步前瞻 beam</text>
+<rect x="200" y="174" width="248.3" height="19" rx="3" class="barx"><title>3.3a 两步前瞻 beam：776.0 s/源</title></rect>
+<text x="454.3" y="188" class="tick" style="font-size:12px">776  +31</text>
+<text x="192" y="228" class="lbl" text-anchor="end">方案四 = 3.1+3.2+3.3b</text>
+<rect x="200" y="214" width="220.4" height="19" rx="3" class="bar4"><title>方案四 = 3.1+3.2+3.3b：688.9 s/源</title></rect>
+<text x="426.4" y="228" class="tick" style="font-size:12px">689  -56</text>
+</svg></div></figure>
+  </div>
+  <p class="prose">每一行都是“只改这一项”的结果。问题三主要靠参数标定，问题四主要靠覆盖网；两步前瞻反而更慢，被否掉。三项合起来不是简单相加：合并后问题三 300.5 s、问题四 688.9 s。</p>
+</section>
+
+<section id="bo">
+  <div class="sec-head"><div class="eyebrow">采用 · 3.1</div><h2>贝叶斯优化：少测、多试清</h2></div>
+  <p class="prose">把 7 个策略参数当黑箱，用高斯过程 + EI 采集函数搜索，目标是两问归一化时间的平均。50 次评估，每次评估跑 60 局，总共约 2 分钟。</p>
+  <figure class="fig"><div class="panel"><p class="panel-title">50 次评估的目标值（橙点）与历史最优（蓝线）</p><svg viewBox="0 0 520 250" class="fig-svg" role="img" aria-label="贝叶斯优化 50 次评估的目标值与历史最优">
+<rect x="52" y="12" width="456" height="204" class="plot-bg"/>
+<line x1="52" y1="198.8" x2="508" y2="198.8" class="grid"/><text x="46" y="202.8" class="tick" text-anchor="end">0.95</text>
+<line x1="52" y1="163.6" x2="508" y2="163.6" class="grid"/><text x="46" y="167.6" class="tick" text-anchor="end">1.00</text>
+<line x1="52" y1="128.4" x2="508" y2="128.4" class="grid"/><text x="46" y="132.4" class="tick" text-anchor="end">1.05</text>
+<line x1="52" y1="93.2" x2="508" y2="93.2" class="grid"/><text x="46" y="97.2" class="tick" text-anchor="end">1.10</text>
+<line x1="52" y1="58.1" x2="508" y2="58.1" class="grid"/><text x="46" y="62.1" class="tick" text-anchor="end">1.15</text>
+<line x1="52" y1="22.9" x2="508" y2="22.9" class="grid"/><text x="46" y="26.9" class="tick" text-anchor="end">1.20</text>
+<circle cx="52.0" cy="163.6" r="3.2" class="evalpt"><title>第 1 次：得分 1.000（问题三 336 s，问题四 745 s）</title></circle>
+<circle cx="61.1" cy="184.8" r="3.2" class="evalpt"><title>第 2 次：得分 0.970（问题三 322 s，问题四 730 s）</title></circle>
+<circle cx="70.2" cy="139.3" r="3.2" class="evalpt"><title>第 3 次：得分 1.035（问题三 352 s，问题四 761 s）</title></circle>
+<circle cx="79.4" cy="119.9" r="3.2" class="evalpt"><title>第 4 次：得分 1.062（问题三 362 s，问题四 779 s）</title></circle>
+<circle cx="88.5" cy="102.3" r="3.2" class="evalpt"><title>第 5 次：得分 1.087（问题三 384 s，问题四 767 s）</title></circle>
+<circle cx="97.6" cy="179.2" r="3.2" class="evalpt"><title>第 6 次：得分 0.978（问题三 317 s，问题四 754 s）</title></circle>
+<circle cx="106.7" cy="163.4" r="3.2" class="evalpt"><title>第 7 次：得分 1.000（问题三 337 s，问题四 742 s）</title></circle>
+<circle cx="115.8" cy="151.6" r="3.2" class="evalpt"><title>第 8 次：得分 1.017（问题三 349 s，问题四 740 s）</title></circle>
+<circle cx="125.0" cy="156.3" r="3.2" class="evalpt"><title>第 9 次：得分 1.010（问题三 349 s，问题四 731 s）</title></circle>
+<circle cx="134.1" cy="164.4" r="3.2" class="evalpt"><title>第 10 次：得分 0.999（问题三 341 s，问题四 731 s）</title></circle>
+<circle cx="143.2" cy="180.3" r="3.2" class="evalpt"><title>第 11 次：得分 0.976（问题三 324 s，问题四 735 s）</title></circle>
+<circle cx="152.3" cy="168.1" r="3.2" class="evalpt"><title>第 12 次：得分 0.994（问题三 334 s，问题四 739 s）</title></circle>
+<circle cx="161.4" cy="150.3" r="3.2" class="evalpt"><title>第 13 次：得分 1.019（问题三 345 s，问题四 753 s）</title></circle>
+<circle cx="170.6" cy="186.3" r="3.2" class="evalpt"><title>第 14 次：得分 0.968（问题三 319 s，问题四 734 s）</title></circle>
+<circle cx="179.7" cy="209.0" r="3.2" class="evalpt"><title>第 15 次：得分 0.935（问题三 305 s，问题四 716 s）</title></circle>
+<circle cx="188.8" cy="208.0" r="3.2" class="evalpt"><title>第 16 次：得分 0.937（问题三 306 s，问题四 717 s）</title></circle>
+<circle cx="197.9" cy="198.4" r="3.2" class="evalpt"><title>第 17 次：得分 0.951（问题三 310 s，问题四 728 s）</title></circle>
+<circle cx="207.0" cy="189.1" r="3.2" class="evalpt"><title>第 18 次：得分 0.964（问题三 313 s，问题四 741 s）</title></circle>
+<circle cx="216.2" cy="182.2" r="3.2" class="evalpt"><title>第 19 次：得分 0.974（问题三 313 s，问题四 755 s）</title></circle>
+<circle cx="225.3" cy="194.5" r="3.2" class="evalpt"><title>第 20 次：得分 0.956（问题三 320 s，问题四 715 s）</title></circle>
+<circle cx="234.4" cy="184.9" r="3.2" class="evalpt"><title>第 21 次：得分 0.970（问题三 323 s，问题四 728 s）</title></circle>
+<circle cx="243.5" cy="156.7" r="3.2" class="evalpt"><title>第 22 次：得分 1.010（问题三 347 s，问题四 735 s）</title></circle>
+<circle cx="252.6" cy="179.8" r="3.2" class="evalpt"><title>第 23 次：得分 0.977（问题三 314 s，问题四 759 s）</title></circle>
+<circle cx="261.8" cy="135.5" r="3.2" class="evalpt"><title>第 24 次：得分 1.040（问题三 349 s，问题四 776 s）</title></circle>
+<circle cx="270.9" cy="186.6" r="3.2" class="evalpt"><title>第 25 次：得分 0.967（问题三 319 s，问题四 733 s）</title></circle>
+<circle cx="280.0" cy="181.5" r="3.2" class="evalpt"><title>第 26 次：得分 0.975（问题三 323 s，问题四 734 s）</title></circle>
+<circle cx="289.1" cy="78.5" r="3.2" class="evalpt"><title>第 27 次：得分 1.121（问题三 399 s，问题四 785 s）</title></circle>
+<circle cx="298.2" cy="143.3" r="3.2" class="evalpt"><title>第 28 次：得分 1.029（问题三 338 s，问题四 784 s）</title></circle>
+<circle cx="307.4" cy="118.7" r="3.2" class="evalpt"><title>第 29 次：得分 1.064（问题三 381 s，问题四 739 s）</title></circle>
+<circle cx="316.5" cy="195.8" r="3.2" class="evalpt"><title>第 30 次：得分 0.954（问题三 315 s，问题四 722 s）</title></circle>
+<circle cx="325.6" cy="175.2" r="3.2" class="evalpt"><title>第 31 次：得分 0.983（问题三 327 s，问题四 739 s）</title></circle>
+<circle cx="334.7" cy="178.8" r="3.2" class="evalpt"><title>第 32 次：得分 0.978（问题三 320 s，问题四 748 s）</title></circle>
+<circle cx="343.8" cy="73.8" r="3.2" class="evalpt"><title>第 33 次：得分 1.128（问题三 409 s，问题四 773 s）</title></circle>
+<circle cx="353.0" cy="119.3" r="3.2" class="evalpt"><title>第 34 次：得分 1.063（问题三 376 s，问题四 749 s）</title></circle>
+<circle cx="362.1" cy="156.1" r="3.2" class="evalpt"><title>第 35 次：得分 1.011（问题三 332 s，问题四 768 s）</title></circle>
+<circle cx="371.2" cy="193.0" r="3.2" class="evalpt"><title>第 36 次：得分 0.958（问题三 313 s，问题四 733 s）</title></circle>
+<circle cx="380.3" cy="152.2" r="3.2" class="evalpt"><title>第 37 次：得分 1.016（问题三 353 s，问题四 731 s）</title></circle>
+<circle cx="389.4" cy="182.9" r="3.2" class="evalpt"><title>第 38 次：得分 0.973（问题三 313 s，问题四 754 s）</title></circle>
+<circle cx="398.6" cy="176.0" r="3.2" class="evalpt"><title>第 39 次：得分 0.982（问题三 320 s，问题四 753 s）</title></circle>
+<circle cx="407.7" cy="198.6" r="3.2" class="evalpt"><title>第 40 次：得分 0.950（问题三 315 s，问题四 717 s）</title></circle>
+<circle cx="416.8" cy="174.7" r="3.2" class="evalpt"><title>第 41 次：得分 0.984（问题三 326 s，问题四 743 s）</title></circle>
+<circle cx="425.9" cy="64.7" r="3.2" class="evalpt"><title>第 42 次：得分 1.141（问题三 413 s，问题四 784 s）</title></circle>
+<circle cx="435.0" cy="177.4" r="3.2" class="evalpt"><title>第 43 次：得分 0.980（问题三 323 s，问题四 743 s）</title></circle>
+<circle cx="444.2" cy="188.3" r="3.2" class="evalpt"><title>第 44 次：得分 0.965（问题三 321 s，问题四 725 s）</title></circle>
+<circle cx="453.3" cy="175.6" r="3.2" class="evalpt"><title>第 45 次：得分 0.983（问题三 320 s，问题四 753 s）</title></circle>
+<circle cx="462.4" cy="185.0" r="3.2" class="evalpt"><title>第 46 次：得分 0.970（问题三 326 s，问题四 721 s）</title></circle>
+<circle cx="471.5" cy="152.7" r="3.2" class="evalpt"><title>第 47 次：得分 1.015（问题三 341 s，问题四 756 s）</title></circle>
+<circle cx="480.6" cy="189.3" r="3.2" class="evalpt"><title>第 48 次：得分 0.963（问题三 321 s，问题四 722 s）</title></circle>
+<circle cx="489.8" cy="137.1" r="3.2" class="evalpt"><title>第 49 次：得分 1.038（问题三 350 s，问题四 769 s）</title></circle>
+<circle cx="498.9" cy="134.7" r="3.2" class="evalpt"><title>第 50 次：得分 1.041（问题三 354 s，问题四 765 s）</title></circle>
+<circle cx="508.0" cy="164.4" r="3.2" class="evalpt"><title>第 51 次：得分 0.999（问题三 336 s，问题四 742 s）</title></circle>
+<polyline points="52.0,163.6 61.1,184.8 70.2,184.8 79.4,184.8 88.5,184.8 97.6,184.8 106.7,184.8 115.8,184.8 125.0,184.8 134.1,184.8 143.2,184.8 152.3,184.8 161.4,184.8 170.6,186.3 179.7,209.0 188.8,209.0 197.9,209.0 207.0,209.0 216.2,209.0 225.3,209.0 234.4,209.0 243.5,209.0 252.6,209.0 261.8,209.0 270.9,209.0 280.0,209.0 289.1,209.0 298.2,209.0 307.4,209.0 316.5,209.0 325.6,209.0 334.7,209.0 343.8,209.0 353.0,209.0 362.1,209.0 371.2,209.0 380.3,209.0 389.4,209.0 398.6,209.0 407.7,209.0 416.8,209.0 425.9,209.0 435.0,209.0 444.2,209.0 453.3,209.0 462.4,209.0 471.5,209.0 480.6,209.0 489.8,209.0 498.9,209.0 508.0,209.0" class="line-run"/>
+<text x="508.0" y="201.0" class="lbl" text-anchor="end">历史最优 0.935</text>
+<text x="280.0" y="246" class="lbl-muted" text-anchor="middle">评估次数（每次跑 60 局）</text>
+<text x="14" y="114.0" class="lbl-muted" text-anchor="middle" transform="rotate(-90 14 114.0)">归一化得分（越低越好）</text>
+</svg></div>
+  <figcaption>点很快落到 0.93–0.98 的带里，之后再难改进：目标在最优点附近很平，多组不同参数得分接近。所以参数精调不是主要收益来源。</figcaption></figure>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>参数</th><th class="n">方案三</th><th class="n">方案四</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td>局部补测次数上限</td><td class="n">4</td><td class="n">2</td><td>少测</td></tr>
+      <tr><td>直接逐格试清的格数上限</td><td class="n">3</td><td class="n">6</td><td>多试清</td></tr>
+      <tr><td>局部补测距离上限</td><td class="n">700 m</td><td class="n">540 m</td><td>补测不必走太远</td></tr>
+      <tr><td>补测与区域长轴夹角</td><td class="n">≥55°</td><td class="n">≥40°</td><td>放宽，换更近的点</td></tr>
+      <tr><td>顺带补测最小夹角</td><td class="n">25°</td><td class="n">12°</td><td>覆盖点上多测一次几乎不要钱</td></tr>
+      <tr><td>x 顺路清除绕行阈值</td><td class="n">600 m</td><td class="n">530 m</td><td>基本不敏感</td></tr>
+      <tr><td>r_ok 可确认区域半径</td><td class="n">150 m</td><td class="n">130 m</td><td>基本不敏感</td></tr>
+    </tbody></table></div>
+  <p class="prose">方向很清楚：<b>少补测、多试清</b>。清除失败只花 3 s，而补测要走过去再花 5 s，所以区域缩到几十米后，直接用 20 m 清除圆逐格覆盖比再测一次更划算。验证集上的收益（问题三 −7.7%、问题四 −3.1%）小于训练集，属于正常的调参折扣。</p>
+</section>
+
+<section id="cover">
+  <div class="sec-head"><div class="eyebrow">采用一半 · 3.2</div><h2>集合覆盖：最少点数不等于最快，抽样也给不出保证</h2></div>
+  <p class="prose">问题三是标准的距离覆盖集合覆盖问题。LP 松弛下界 5.88，说明整数最优至少 6 个点，实际最少 7 个。但按时间算，点少不等于快——巡回长度才是关键。</p>
+  <figure class="fig"><div class="panel"><p class="panel-title">问题三：各覆盖网的巡回长度与最坏覆盖距离</p><svg viewBox="0 0 520 300" class="fig-svg" role="img" aria-label="问题三覆盖网：巡回长度与最坏覆盖距离">
+<rect x="54" y="14" width="452" height="250" class="plot-bg"/>
+<line x1="54" y1="264.0" x2="506" y2="264.0" class="grid"/><text x="48" y="268.0" class="tick" text-anchor="end">960</text>
+<line x1="54" y1="214.0" x2="506" y2="214.0" class="grid"/><text x="48" y="218.0" class="tick" text-anchor="end">970</text>
+<line x1="54" y1="164.0" x2="506" y2="164.0" class="grid"/><text x="48" y="168.0" class="tick" text-anchor="end">980</text>
+<line x1="54" y1="114.0" x2="506" y2="114.0" class="grid"/><text x="48" y="118.0" class="tick" text-anchor="end">990</text>
+<line x1="54" y1="64.0" x2="506" y2="64.0" class="grid"/><text x="48" y="68.0" class="tick" text-anchor="end">1000</text>
+<line x1="54" y1="14.0" x2="506" y2="14.0" class="grid"/><text x="48" y="18.0" class="tick" text-anchor="end">1010</text>
+<text x="54.0" y="280" class="tick" text-anchor="middle">6.0</text>
+<text x="156.7" y="280" class="tick" text-anchor="middle">6.5</text>
+<text x="259.5" y="280" class="tick" text-anchor="middle">7.0</text>
+<text x="362.2" y="280" class="tick" text-anchor="middle">7.5</text>
+<text x="464.9" y="280" class="tick" text-anchor="middle">8.0</text>
+<line x1="54" y1="64.0" x2="506" y2="64.0" class="limit"/><text x="60" y="58.0" class="lbl" style="fill:var(--bad)">保证上限 1000 m</text>
+<circle cx="300.5" cy="219.5" r="6" class="dot pt-a"><title>方案一 7 点：巡回 7200 m，最坏覆盖 968.9 m</title></circle>
+<text x="288.5" y="223.5" class="lbl" text-anchor="end">方案一 7 点</text>
+<circle cx="93.4" cy="192.5" r="6" class="dot pt-ok"><title>正八边形 974 m（采用）：巡回 6192 m，最坏覆盖 974.3 m</title></circle>
+<text x="105.4" y="196.5" class="lbl" text-anchor="start">正八边形 974 m（采用）</text>
+<circle cx="441.9" cy="54.5" r="6" class="dot pt-bad"><title>集合覆盖 k=8（不合格）：巡回 7888 m，最坏覆盖 1001.9 m</title></circle>
+<text x="429.9" y="58.5" class="lbl" text-anchor="end">集合覆盖 k=8（不合格）</text>
+<circle cx="248.6" cy="99.5" r="6" class="dot pt-b"><title>集合覆盖 k=9：巡回 6947 m，最坏覆盖 992.9 m</title></circle>
+<text x="260.6" y="91.5" class="lbl" text-anchor="start">集合覆盖 k=9</text>
+<circle cx="211.6" cy="98.5" r="6" class="dot pt-b"><title>集合覆盖 k=10：巡回 6767 m，最坏覆盖 993.1 m</title></circle>
+<text x="199.6" y="114.5" class="lbl" text-anchor="end">集合覆盖 k=10</text>
+<text x="280.0" y="296" class="lbl-muted" text-anchor="middle">覆盖巡回长度（km）</text>
+<text x="14" y="139.0" class="lbl-muted" text-anchor="middle" transform="rotate(-90 14 139.0)">最坏覆盖距离（m）</text>
+</svg></div>
+  <figcaption>正八边形（8 点，解析式给出覆盖距离 974.3 m）巡回最短。集合覆盖的 k=8 解在稠密复验里最坏覆盖距离 1001.9 m，超过 1000 m 上限，不合格——抽样设计必须复验。</figcaption></figure>
+  <p class="prose">问题四不能用距离覆盖：定向源要求检测点把它<b>围住</b>。把“位置 × 朝向”当成元素做集合覆盖，贪心只要 29 个点、巡回 21.7 km，看起来很香，但在更密的复验中漏测 207 个位置——设计时的抽样分辨率不够。所以最终还是回到有解析证书的三角格族，只优化它的偏移和旋转。</p>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">方案三：h=990 格网 · 27 点 · 26.7 km ✓</p><svg viewBox="0 0 300 300" class="fig-svg" role="img" aria-label="h=990 格网">
+<rect x="0" y="0" width="300" height="300" class="plot-bg"/>
+<circle cx="150.0" cy="150.0" r="87.3" class="disk"/>
+<polyline points="150.0,139.6 126.0,181.2 102.0,139.6 78.0,181.2 54.0,139.6 30.0,181.2 54.0,222.7 78.0,264.3 126.0,264.3 174.0,264.3 222.0,264.3 246.0,222.7 198.0,222.7 150.0,222.7 102.0,222.7 174.0,181.2 198.0,139.6 222.0,181.2 270.0,181.2 246.0,139.6 222.0,98.0 174.0,98.0 126.0,98.0 78.0,98.0 102.0,56.5 150.0,56.5 198.0,56.5" class="route-nn"/>
+<rect x="27.0" y="178.2" width="6" height="6" class="netpt2"/>
+<rect x="51.0" y="219.7" width="6" height="6" class="netpt2"/>
+<rect x="51.0" y="136.6" width="6" height="6" class="netpt2"/>
+<rect x="75.0" y="261.3" width="6" height="6" class="netpt2"/>
+<rect x="75.0" y="178.2" width="6" height="6" class="netpt2"/>
+<rect x="75.0" y="95.0" width="6" height="6" class="netpt2"/>
+<rect x="99.0" y="219.7" width="6" height="6" class="netpt2"/>
+<rect x="99.0" y="136.6" width="6" height="6" class="netpt2"/>
+<rect x="99.0" y="53.5" width="6" height="6" class="netpt2"/>
+<rect x="123.0" y="261.3" width="6" height="6" class="netpt2"/>
+<rect x="123.0" y="178.2" width="6" height="6" class="netpt2"/>
+<rect x="123.0" y="95.0" width="6" height="6" class="netpt2"/>
+<rect x="147.0" y="219.7" width="6" height="6" class="netpt2"/>
+<rect x="147.0" y="136.6" width="6" height="6" class="netpt2"/>
+<rect x="147.0" y="53.5" width="6" height="6" class="netpt2"/>
+<rect x="171.0" y="261.3" width="6" height="6" class="netpt2"/>
+<rect x="171.0" y="178.2" width="6" height="6" class="netpt2"/>
+<rect x="171.0" y="95.0" width="6" height="6" class="netpt2"/>
+<rect x="195.0" y="219.7" width="6" height="6" class="netpt2"/>
+<rect x="195.0" y="136.6" width="6" height="6" class="netpt2"/>
+<rect x="195.0" y="53.5" width="6" height="6" class="netpt2"/>
+<rect x="219.0" y="261.3" width="6" height="6" class="netpt2"/>
+<rect x="219.0" y="178.2" width="6" height="6" class="netpt2"/>
+<rect x="219.0" y="95.0" width="6" height="6" class="netpt2"/>
+<rect x="243.0" y="219.7" width="6" height="6" class="netpt2"/>
+<rect x="243.0" y="136.6" width="6" height="6" class="netpt2"/>
+<rect x="267.0" y="178.2" width="6" height="6" class="netpt2"/>
+<circle cx="150.0" cy="150.0" r="2.5" class="origin"/>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">方案四：h=950 偏移优化 · 27 点 · 25.1 km ✓</p><svg viewBox="0 0 300 300" class="fig-svg" role="img" aria-label="h=950 格网">
+<rect x="0" y="0" width="300" height="300" class="plot-bg"/>
+<circle cx="150.0" cy="150.0" r="87.3" class="disk"/>
+<polyline points="160.0,167.3 120.1,190.3 160.0,213.3 120.1,236.3 160.0,259.4 199.9,236.3 199.9,190.3 199.9,144.2 199.9,98.2 160.0,75.2 120.1,98.2 160.0,121.2 120.1,144.2 80.2,167.3 80.2,213.3 40.3,190.3 40.3,144.2 80.2,121.2 40.3,98.2 80.2,75.2 120.1,52.1 160.0,29.1 199.9,52.1 239.7,75.2 239.7,121.2 239.7,167.3 239.7,213.3" class="route-nn"/>
+<rect x="37.3" y="187.3" width="6" height="6" class="netpt2"/>
+<rect x="37.3" y="141.2" width="6" height="6" class="netpt2"/>
+<rect x="37.3" y="95.2" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="210.3" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="164.3" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="118.2" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="72.2" width="6" height="6" class="netpt2"/>
+<rect x="117.1" y="233.3" width="6" height="6" class="netpt2"/>
+<rect x="117.1" y="187.3" width="6" height="6" class="netpt2"/>
+<rect x="117.1" y="141.2" width="6" height="6" class="netpt2"/>
+<rect x="117.1" y="95.2" width="6" height="6" class="netpt2"/>
+<rect x="117.1" y="49.1" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="256.4" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="210.3" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="164.3" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="118.2" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="72.2" width="6" height="6" class="netpt2"/>
+<rect x="157.0" y="26.1" width="6" height="6" class="netpt2"/>
+<rect x="196.9" y="233.3" width="6" height="6" class="netpt2"/>
+<rect x="196.9" y="187.3" width="6" height="6" class="netpt2"/>
+<rect x="196.9" y="141.2" width="6" height="6" class="netpt2"/>
+<rect x="196.9" y="95.2" width="6" height="6" class="netpt2"/>
+<rect x="196.9" y="49.1" width="6" height="6" class="netpt2"/>
+<rect x="236.7" y="210.3" width="6" height="6" class="netpt2"/>
+<rect x="236.7" y="164.3" width="6" height="6" class="netpt2"/>
+<rect x="236.7" y="118.2" width="6" height="6" class="netpt2"/>
+<rect x="236.7" y="72.2" width="6" height="6" class="netpt2"/>
+<circle cx="150.0" cy="150.0" r="2.5" class="origin"/>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title" style="color:var(--bad)">抽样集合覆盖：29 点 · 21.7 km ✗ 漏测</p><svg viewBox="0 0 300 300" class="fig-svg" role="img" aria-label="抽样集合覆盖网">
+<rect x="0" y="0" width="300" height="300" class="plot-bg"/>
+<circle cx="150.0" cy="150.0" r="87.3" class="disk"/>
+<polyline points="109.3,150.0 144.2,155.8 173.3,150.0 196.5,173.3 173.3,184.9 144.2,196.5 103.5,196.5 91.8,196.5 86.0,219.8 45.3,190.7 62.7,150.0 80.2,126.7 97.6,103.5 68.6,97.6 80.2,56.9 120.9,27.8 132.5,62.7 144.2,103.5 167.5,115.1 190.7,91.8 184.9,62.7 231.4,103.5 237.3,144.2 219.8,150.0 231.4,196.5 190.7,208.2 184.9,237.3 132.5,237.3 120.9,278.0" class="route-nn"/>
+<circle cx="237.3" cy="150.0" r="2" class="missdot"/>
+<circle cx="237.2" cy="148.5" r="2" class="missdot"/>
+<circle cx="237.2" cy="147.0" r="2" class="missdot"/>
+<circle cx="237.1" cy="145.4" r="2" class="missdot"/>
+<circle cx="206.0" cy="145.1" r="2" class="missdot"/>
+<circle cx="222.9" cy="130.5" r="2" class="missdot"/>
+<circle cx="223.9" cy="128.8" r="2" class="missdot"/>
+<circle cx="221.5" cy="100.0" r="2" class="missdot"/>
+<circle cx="220.6" cy="98.7" r="2" class="missdot"/>
+<circle cx="218.5" cy="98.4" r="2" class="missdot"/>
+<circle cx="214.1" cy="99.9" r="2" class="missdot"/>
+<circle cx="182.3" cy="102.2" r="2" class="missdot"/>
+<circle cx="188.7" cy="80.2" r="2" class="missdot"/>
+<circle cx="190.9" cy="76.3" r="2" class="missdot"/>
+<circle cx="192.3" cy="73.7" r="2" class="missdot"/>
+<circle cx="190.3" cy="74.3" r="2" class="missdot"/>
+<circle cx="188.3" cy="74.9" r="2" class="missdot"/>
+<circle cx="189.6" cy="72.3" r="2" class="missdot"/>
+<circle cx="188.2" cy="71.6" r="2" class="missdot"/>
+<circle cx="181.3" cy="68.5" r="2" class="missdot"/>
+<circle cx="149.3" cy="107.1" r="2" class="missdot"/>
+<circle cx="147.7" cy="105.7" r="2" class="missdot"/>
+<circle cx="146.3" cy="107.3" r="2" class="missdot"/>
+<circle cx="136.4" cy="63.8" r="2" class="missdot"/>
+<circle cx="136.6" cy="74.3" r="2" class="missdot"/>
+<circle cx="135.9" cy="69.9" r="2" class="missdot"/>
+<circle cx="135.1" cy="65.5" r="2" class="missdot"/>
+<circle cx="131.0" cy="67.9" r="2" class="missdot"/>
+<circle cx="130.4" cy="65.0" r="2" class="missdot"/>
+<circle cx="93.5" cy="91.5" r="2" class="missdot"/>
+<circle cx="95.7" cy="97.6" r="2" class="missdot"/>
+<circle cx="63.6" cy="137.9" r="2" class="missdot"/>
+<circle cx="63.4" cy="139.4" r="2" class="missdot"/>
+<circle cx="63.1" cy="142.4" r="2" class="missdot"/>
+<circle cx="63.0" cy="143.9" r="2" class="missdot"/>
+<circle cx="124.9" cy="148.7" r="2" class="missdot"/>
+<circle cx="127.8" cy="149.2" r="2" class="missdot"/>
+<circle cx="123.4" cy="149.1" r="2" class="missdot"/>
+<circle cx="62.8" cy="147.0" r="2" class="missdot"/>
+<circle cx="126.3" cy="149.6" r="2" class="missdot"/>
+<circle cx="62.8" cy="148.5" r="2" class="missdot"/>
+<circle cx="123.4" cy="150.5" r="2" class="missdot"/>
+<circle cx="121.9" cy="151.5" r="2" class="missdot"/>
+<circle cx="86.2" cy="193.0" r="2" class="missdot"/>
+<circle cx="87.0" cy="194.1" r="2" class="missdot"/>
+<circle cx="136.9" cy="224.3" r="2" class="missdot"/>
+<circle cx="136.1" cy="228.6" r="2" class="missdot"/>
+<circle cx="135.4" cy="233.0" r="2" class="missdot"/>
+<circle cx="134.8" cy="235.9" r="2" class="missdot"/>
+<circle cx="138.4" cy="223.0" r="2" class="missdot"/>
+<circle cx="180.7" cy="230.1" r="2" class="missdot"/>
+<circle cx="181.6" cy="228.2" r="2" class="missdot"/>
+<circle cx="182.7" cy="230.9" r="2" class="missdot"/>
+<circle cx="188.2" cy="228.4" r="2" class="missdot"/>
+<circle cx="189.6" cy="227.7" r="2" class="missdot"/>
+<circle cx="189.6" cy="224.4" r="2" class="missdot"/>
+<circle cx="191.0" cy="227.0" r="2" class="missdot"/>
+<circle cx="190.2" cy="222.4" r="2" class="missdot"/>
+<circle cx="192.3" cy="226.3" r="2" class="missdot"/>
+<circle cx="219.7" cy="202.5" r="2" class="missdot"/>
+<circle cx="220.6" cy="201.3" r="2" class="missdot"/>
+<circle cx="235.3" cy="168.1" r="2" class="missdot"/>
+<circle cx="235.7" cy="166.6" r="2" class="missdot"/>
+<circle cx="236.2" cy="163.6" r="2" class="missdot"/>
+<circle cx="236.4" cy="162.1" r="2" class="missdot"/>
+<circle cx="236.8" cy="159.1" r="2" class="missdot"/>
+<circle cx="236.9" cy="157.6" r="2" class="missdot"/>
+<circle cx="237.1" cy="154.6" r="2" class="missdot"/>
+<circle cx="237.2" cy="153.0" r="2" class="missdot"/>
+<rect x="170.3" y="147.0" width="6" height="6" class="netpt2"/>
+<rect x="106.3" y="147.0" width="6" height="6" class="netpt2"/>
+<rect x="141.2" y="193.5" width="6" height="6" class="netpt2"/>
+<rect x="141.2" y="100.5" width="6" height="6" class="netpt2"/>
+<rect x="216.8" y="147.0" width="6" height="6" class="netpt2"/>
+<rect x="187.7" y="205.2" width="6" height="6" class="netpt2"/>
+<rect x="187.7" y="88.8" width="6" height="6" class="netpt2"/>
+<rect x="94.6" y="100.5" width="6" height="6" class="netpt2"/>
+<rect x="88.8" y="193.5" width="6" height="6" class="netpt2"/>
+<rect x="59.7" y="147.0" width="6" height="6" class="netpt2"/>
+<rect x="129.5" y="234.3" width="6" height="6" class="netpt2"/>
+<rect x="129.5" y="59.7" width="6" height="6" class="netpt2"/>
+<rect x="228.4" y="193.5" width="6" height="6" class="netpt2"/>
+<rect x="228.4" y="100.5" width="6" height="6" class="netpt2"/>
+<rect x="141.2" y="152.8" width="6" height="6" class="netpt2"/>
+<rect x="65.6" y="94.6" width="6" height="6" class="netpt2"/>
+<rect x="181.9" y="234.3" width="6" height="6" class="netpt2"/>
+<rect x="181.9" y="59.7" width="6" height="6" class="netpt2"/>
+<rect x="83.0" y="216.8" width="6" height="6" class="netpt2"/>
+<rect x="234.3" y="141.2" width="6" height="6" class="netpt2"/>
+<rect x="164.5" y="112.1" width="6" height="6" class="netpt2"/>
+<rect x="42.3" y="187.7" width="6" height="6" class="netpt2"/>
+<rect x="170.3" y="181.9" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="53.9" width="6" height="6" class="netpt2"/>
+<rect x="100.5" y="193.5" width="6" height="6" class="netpt2"/>
+<rect x="77.2" y="123.7" width="6" height="6" class="netpt2"/>
+<rect x="117.9" y="275.0" width="6" height="6" class="netpt2"/>
+<rect x="117.9" y="24.8" width="6" height="6" class="netpt2"/>
+<rect x="193.5" y="170.3" width="6" height="6" class="netpt2"/>
+<circle cx="150.0" cy="150.0" r="2.5" class="origin"/>
+</svg></div></figure>
+  </div>
+  <p class="prose" style="color:var(--ink-2);font-size:.92rem">红点是复验中“无论朝哪个方向都没有检测点能收到”的源位置（图中每 3 个画 1 个）。方案四的格网把巡回从 26.7 km 缩到 25.1 km，证明与最终文档 §5.2 完全相同，只是换了边长和偏移。</p>
+</section>
+
+<section id="alns">
+  <div class="sec-head"><div class="eyebrow">采用 · 3.3b</div><h2>ALNS：只在最后集中清除时有用</h2></div>
+  <p class="prose">覆盖走完后剩下的源要排一个顺序。原来用最近邻，现在用 ALNS（随机/最差移除 + 最小插入修复 + 2-opt，200 次迭代）。</p>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">最近邻顺序：8.21 km</p><svg viewBox="0 0 300 300" class="fig-svg" role="img" aria-label="最近邻顺序">
+<rect x="0" y="0" width="300" height="300" class="plot-bg"/>
+<polyline points="252.5,231.0 237.1,162.5 221.3,172.5 122.1,169.4 108.1,208.6 53.0,181.8 47.5,126.9 83.2,97.7 98.1,69.0 96.6,129.0" class="route-nn"/>
+<circle cx="252.5" cy="231.0" r="5" class="origin"/>
+<circle cx="237.1" cy="162.5" r="5" class="src"/><text x="245.1" y="156.5" class="lbl-muted">1</text>
+<circle cx="221.3" cy="172.5" r="5" class="src"/><text x="229.3" y="166.5" class="lbl-muted">2</text>
+<circle cx="122.1" cy="169.4" r="5" class="src"/><text x="130.1" y="163.4" class="lbl-muted">3</text>
+<circle cx="108.1" cy="208.6" r="5" class="src"/><text x="116.1" y="202.6" class="lbl-muted">4</text>
+<circle cx="53.0" cy="181.8" r="5" class="src"/><text x="61.0" y="175.8" class="lbl-muted">5</text>
+<circle cx="47.5" cy="126.9" r="5" class="src"/><text x="55.5" y="120.9" class="lbl-muted">6</text>
+<circle cx="83.2" cy="97.7" r="5" class="src"/><text x="91.2" y="91.7" class="lbl-muted">7</text>
+<circle cx="98.1" cy="69.0" r="5" class="src"/><text x="106.1" y="63.0" class="lbl-muted">8</text>
+<circle cx="96.6" cy="129.0" r="5" class="src"/><text x="104.6" y="123.0" class="lbl-muted">9</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">ALNS 顺序：7.82 km（−4.7%）</p><svg viewBox="0 0 300 300" class="fig-svg" role="img" aria-label="ALNS 顺序">
+<rect x="0" y="0" width="300" height="300" class="plot-bg"/>
+<polyline points="252.5,231.0 237.1,162.5 221.3,172.5 122.1,169.4 108.1,208.6 53.0,181.8 47.5,126.9 96.6,129.0 83.2,97.7 98.1,69.0" class="route-alns"/>
+<circle cx="252.5" cy="231.0" r="5" class="origin"/>
+<circle cx="237.1" cy="162.5" r="5" class="src"/><text x="245.1" y="156.5" class="lbl-muted">1</text>
+<circle cx="221.3" cy="172.5" r="5" class="src"/><text x="229.3" y="166.5" class="lbl-muted">2</text>
+<circle cx="122.1" cy="169.4" r="5" class="src"/><text x="130.1" y="163.4" class="lbl-muted">3</text>
+<circle cx="108.1" cy="208.6" r="5" class="src"/><text x="116.1" y="202.6" class="lbl-muted">4</text>
+<circle cx="53.0" cy="181.8" r="5" class="src"/><text x="61.0" y="175.8" class="lbl-muted">5</text>
+<circle cx="47.5" cy="126.9" r="5" class="src"/><text x="55.5" y="120.9" class="lbl-muted">6</text>
+<circle cx="96.6" cy="129.0" r="5" class="src"/><text x="104.6" y="123.0" class="lbl-muted">7</text>
+<circle cx="83.2" cy="97.7" r="5" class="src"/><text x="91.2" y="91.7" class="lbl-muted">8</text>
+<circle cx="98.1" cy="69.0" r="5" class="src"/><text x="106.1" y="63.0" class="lbl-muted">9</text>
+</svg></div></figure>
+  </div>
+  <p class="prose">这是改进最明显的一局（9 个待清源）。整体上没这么夸张：60 次调用里只有 3 次路径更短，平均只省 0.2% 的路程——因为待清源通常只有 5–10 个，最近邻已经接近最优。但换成 ALNS 后总时间仍降了一点（问题三 305.4 → 300.5 s，问题四 690.9 → 688.9 s），因为顺序变化也改变了后续的位置和补测。用在覆盖点巡回上则没有提升。</p>
+</section>
+
+<section id="beam">
+  <div class="sec-head"><div class="eyebrow">否掉 · 3.3a</div><h2>两步前瞻：想多看一步，结果更慢</h2></div>
+  <p class="prose">让机器狗每一步都在“去下一个覆盖点”和“去清某个已定位的源”之间按两步代价挑，宽度 4。结果问题三 335.7 → 357.7 s（慢 6.6%），问题四 745.0 → 776.0 s（慢 4.2%）。</p>
+  <div class="verdict prose">
+    <div class="vrow"><span class="chip bad">原因一</span><p>覆盖点巡回本来就是先用最近邻 + 2-opt 排好的，接近最优；前瞻会按“当前最省”打乱它，整体绕路反而变多。</p></div>
+    <div class="vrow"><span class="chip bad">原因二</span><p>两步的代价估计太粗：它只算“走过去 + 测几个频道”，没算“剩下的覆盖还欠多少路”。要修就得把剩余覆盖的代价也估进去，成本高、收益不确定。</p></div>
+    <div class="vrow"><span class="chip good">结论</span><p>保留固定巡回 + 顺路清除（椭圆判据）这一套，不引入前瞻。这也是个有用的论文素材：不是所有“更聪明”的搜索都更快。</p></div>
+  </div>
+</section>
+
+<section id="de">
+  <div class="sec-head"><div class="eyebrow">问题二</div><h2>差分进化：把网格解再挪一点</h2></div>
+  <p class="prose">问题二的目标函数里有 sup、多边形求交和直径，不可微，适合直接上差分进化。可行域和初值仍由几何推导给出。</p>
+  <div class="cmp-grid">
+    <figure class="fig"><div class="panel"><p class="panel-title">4 次独立运行的收敛曲线</p><svg viewBox="0 0 480 240" class="fig-svg" role="img" aria-label="差分进化 4 次独立运行的收敛曲线">
+<rect x="54" y="12" width="414" height="196" class="plot-bg"/>
+<line x1="54" y1="198.6" x2="468" y2="198.6" class="grid"/><text x="48" y="202.6" class="tick" text-anchor="end">122</text>
+<line x1="54" y1="169.9" x2="468" y2="169.9" class="grid"/><text x="48" y="173.9" class="tick" text-anchor="end">124</text>
+<line x1="54" y1="141.2" x2="468" y2="141.2" class="grid"/><text x="48" y="145.2" class="tick" text-anchor="end">126</text>
+<line x1="54" y1="112.5" x2="468" y2="112.5" class="grid"/><text x="48" y="116.5" class="tick" text-anchor="end">128</text>
+<line x1="54" y1="83.8" x2="468" y2="83.8" class="grid"/><text x="48" y="87.8" class="tick" text-anchor="end">130</text>
+<line x1="54" y1="55.1" x2="468" y2="55.1" class="grid"/><text x="48" y="59.1" class="tick" text-anchor="end">132</text>
+<line x1="54" y1="26.4" x2="468" y2="26.4" class="grid"/><text x="48" y="30.4" class="tick" text-anchor="end">134</text>
+<line x1="54" y1="157.7" x2="468" y2="157.7" class="limit"/><text x="464" y="151.7" class="lbl" text-anchor="end" style="fill:var(--bad)">50 m 网格解 F=124.85</text>
+<polyline points="54.0,177.4 64.6,177.4 75.2,177.4 85.8,177.4 96.5,177.4 107.1,177.4 117.7,177.4 128.3,177.4 138.9,177.4 149.5,177.4 160.2,177.4 170.8,177.4 181.4,177.4 192.0,177.4 202.6,177.4 213.2,177.4 223.8,177.4 234.5,191.1 245.1,191.1 255.7,191.1 266.3,191.8 276.9,191.8 287.5,191.8 298.2,191.8 308.8,191.8 319.4,192.6 330.0,192.6 340.6,192.6 351.2,192.6 361.8,192.6 372.5,192.6 383.1,192.6 393.7,192.6 404.3,192.6 414.9,192.6 425.5,192.6 436.2,192.6 446.8,192.6 457.4,193.1 468.0,193.6" class="line-de de1"><title>第 1 次运行</title></polyline>
+<polyline points="54.0,12.0 64.6,12.0 75.2,135.0 85.8,135.0 96.5,135.0 107.1,135.0 117.7,178.4 128.3,178.4 138.9,178.4 149.5,178.4 160.2,178.4 170.8,178.4 181.4,178.4 192.0,178.4 202.6,178.4 213.2,178.4 223.8,178.4 234.5,178.4 245.1,178.4 255.7,188.1 266.3,188.1 276.9,188.1 287.5,189.1 298.2,189.1 308.8,189.1 319.4,189.1 330.0,189.1 340.6,189.9 351.2,189.9 361.8,189.9 372.5,189.9 383.1,189.9 393.7,192.3 404.3,192.3 414.9,192.5 425.5,192.6 436.2,192.6 446.8,192.6 457.4,193.0 468.0,193.1" class="line-de de2"><title>第 2 次运行</title></polyline>
+<polyline points="54.0,12.0 64.6,12.0 75.2,12.0 85.8,12.0 96.5,12.0 107.1,12.0 117.7,12.0 128.3,174.6 138.9,174.6 149.5,174.6 160.2,176.0 170.8,176.0 181.4,176.0 192.0,176.0 202.6,176.0 213.2,176.0 223.8,176.0 234.5,176.0 245.1,176.0 255.7,176.0 266.3,189.7 276.9,192.0 287.5,192.0 298.2,192.0 308.8,192.0 319.4,192.0 330.0,192.0 340.6,192.0 351.2,192.0 361.8,192.0 372.5,192.0 383.1,192.0 393.7,192.0 404.3,192.0 414.9,192.0 425.5,192.0 436.2,192.0 446.8,192.0 457.4,192.0 468.0,192.0" class="line-de de3"><title>第 3 次运行</title></polyline>
+<polyline points="54.0,12.0 64.6,12.0 75.2,12.0 85.8,12.0 96.5,12.0 107.1,12.0 117.7,12.0 128.3,12.0 138.9,115.4 149.5,115.4 160.2,163.3 170.8,163.3 181.4,163.3 192.0,163.3 202.6,182.3 213.2,182.3 223.8,182.3 234.5,193.4 245.1,193.4 255.7,193.4 266.3,193.4 276.9,193.4 287.5,193.4 298.2,193.4 308.8,193.4 319.4,193.4 330.0,193.4 340.6,193.4 351.2,193.4 361.8,193.4 372.5,193.4 383.1,193.4 393.7,193.4 404.3,193.4 414.9,193.4 425.5,193.4 436.2,193.4 446.8,193.4 457.4,193.4 468.0,193.4" class="line-de de4"><title>第 4 次运行</title></polyline>
+<text x="261.0" y="236" class="lbl-muted" text-anchor="middle">迭代代数</text>
+<text x="14" y="110.0" class="lbl-muted" text-anchor="middle" transform="rotate(-90 14 110.0)">目标 F（m）</text>
+</svg></div></figure>
+    <figure class="fig"><div class="panel"><p class="panel-title">可行域 P 与两个候选点（局部坐标，单位 m）</p><svg viewBox="0 0 460 300" class="fig-svg" role="img" aria-label="问题二可行域与两个候选第二检测点">
+<rect x="0" y="0" width="460" height="300" class="plot-bg"/>
+<polygon points="334.5,144.5 20.0,150.0 334.5,155.5" class="region"/>
+<circle cx="20.0" cy="150.0" r="5" class="station"/><text x="28.0" y="142.0" class="lbl">S₁</text>
+<circle cx="198.2" cy="254.8" r="6" class="dot pt-a"/><text x="208.2" y="258.8" class="lbl">网格解 (850, −500)  F=124.85</text>
+<circle cx="195.2" cy="264.9" r="6" class="dot pt-ok"/><text x="205.2" y="268.9" class="lbl">DE 解 (835, −548)  F=122.35</text>
+<text x="328.5" y="140.0" class="lbl-muted" text-anchor="end">首测示向线方向 →</text>
+</svg></div></figure>
+  </div>
+  <p class="prose">4 次独立运行（1 次以网格解为初始个体，3 次纯随机）都收敛到同一点及其镜像：<span class="mono">(835.4, −547.8)</span>，最坏区域直径 112.36 m、F=122.35，比 50 m 网格解 (850, −500) 的 124.85 好 2.0%。可探测硬约束在最优点上正好收紧（可行域最远顶点 999.0 m，上限 999 m），说明最优点被“必须收得到信号”这一条顶住了——这正是论文里值得讲的一句话。</p>
+</section>
+
+<footer class="prose">
+  <span>代码：code/experiments/方案四_运行.py（对比与压力测试）、方案四_参数标定.py（贝叶斯优化）、方案四_覆盖网优化.py（集合覆盖与格网搜索）、问题二_DE选点.py；配置见 方案四_实验台.py 的 CFG4。文字说明：docs/review/方案四_迭代记录.md，交接材料第九节。</span>
+  <span>所有时间均为模拟器规则下的虚拟时间，由本地仿真得出，不代表官方演练或正式测试成绩。</span>
+</footer>
+</div>
+</body></html>

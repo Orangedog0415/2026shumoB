@@ -20,7 +20,7 @@ docs/
   problem/    题目 B题.pdf、附件1.docx（模拟器使用说明）、附件2.docx（通信接口）
   plan/       2026国赛B题_最终可执行思路.md —— 方案一的规格（jqx）
   handover/   交接材料.md —— 实现任务说明，第九节为方案三（策略 B）的优化过程与规格
-  review/     最终方案审查.md、方案一_复跑记录.md、方案四_迭代记录.md、方案一走读.html、方案三优化图解.html
+  review/     最终方案审查.md、方案一_复跑记录.md、方案四_迭代记录.md、方案一走读.html、方案三优化图解.html、方案四算法图解.html
   archive/    历史思路、第一轮审查、交接材料原版
 code/
   baseline/
