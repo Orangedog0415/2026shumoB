@@ -4,6 +4,16 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.coverage
+.mplcache/
+*.egg-info/
+code/solver/outputs/*
+!code/solver/outputs/README.md
+!code/solver/outputs/offline/
+!code/solver/outputs/official/
+code/solver/outputs/offline/*
+code/solver/outputs/official/*
+!code/solver/outputs/official/README.md
 
 # 本地归档（题包安全审计渲染图、docx 解包临时文件），不入库
 99_归档/
