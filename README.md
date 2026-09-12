@@ -20,7 +20,8 @@ docs/
   problem/    题目 B题.pdf、附件1.docx（模拟器使用说明）、附件2.docx（通信接口）
   plan/       2026国赛B题_最终可执行思路.md —— 方案一的规格（jqx）
   handover/   交接材料.md —— 实现任务说明，第九节为方案三（策略 B）的优化过程与规格
-  review/     最终方案审查.md、方案一_复跑记录.md、方案四_迭代记录.md、方案一走读.html、方案三优化图解.html、方案四算法图解.html
+  review/     最终方案审查.md、方案一_复跑记录.md、方案四_迭代记录.md、问题四_时间线分析与改进提案.md、
+              方案一走读.html、方案三优化图解.html、方案四算法图解.html
   archive/    历史思路、第一轮审查、交接材料原版
 code/
   baseline/
@@ -35,6 +36,8 @@ code/
     方案四_运行.py                 方案一/三/四对比 + 240 局保证性压力测试
     方案四_参数标定.py             贝叶斯优化标定策略参数（需 numpy）
     方案四_覆盖网优化.py           集合覆盖 + LP 下界 + 三角格偏移搜索（需 numpy/scipy）
+    方案四_问题四时间线.py         问题四全时间线记账（阶段 × 动作）
+    方案五_候选ABC.py              问题四的三项候选改进 A/B/C 及组合 + 压力测试
     问题二_DE选点.py               问题二第二检测点的差分进化求解
     results/                       各脚本输出，文件名同样带方案编号
   solver/
@@ -76,6 +79,10 @@ python code\experiments\方案四_运行.py
 python code\experiments\方案四_参数标定.py
 python code\experiments\方案四_覆盖网优化.py
 python code\experiments\问题二_DE选点.py
+
+# 问题四时间线记账，以及候选改进 A/B/C（见 docs/review/问题四_时间线分析与改进提案.md）
+python code\experiments\方案四_问题四时间线.py
+python code\experiments\方案五_候选ABC.py
 
 # 本地 mock 模拟器：协议一致性自测（约 25 s）
 python code\solver\mocksim\conformance_test.py
