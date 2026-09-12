@@ -41,7 +41,7 @@ def ratios(n=3000, seed=11):
 
 if __name__ == '__main__':
     S.use_style()
-    fig, axes = plt.subplots(1, 3, figsize=(13.6, 4.9))
+    fig, axes = plt.subplots(1, 3, figsize=(13.6, 6.2))
 
     # ---- (a) Thales 等价形式 ----
     ax = axes[0]
@@ -63,7 +63,8 @@ if __name__ == '__main__':
     ax.plot([0],[0],'+',ms=10,mew=1.8,color=C['ink'],zorder=7)
     ax.text(U[0],-.13,'$U$',ha='center',va='top',color=C['ink2'],fontsize=10)
     ax.text(V[0],-.13,'$V$',ha='center',va='top',color=C['ink2'],fontsize=10)
-    ax.set_xlim(-1.6,1.9); ax.set_ylim(-.55,2.05); ax.set_aspect('equal'); ax.set_anchor('N')
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_xlim(-1.10, 1.10); ax.set_ylim(-1.12, 1.85)
     ax.set_xticks([]); ax.set_yticks([])
     for sp in ('top','right','bottom','left'): ax.spines[sp].set_visible(False)
     ax.set_title('(a) Thales 判据：$X$ 在直径圆内 $\\Leftrightarrow$ $\\angle UXV\\geq 90°$', pad=9)
@@ -79,8 +80,9 @@ if __name__ == '__main__':
     ax.plot([0,0],[0,math.sqrt(3)/2], ls=(0,(2,2)), color=C['red'], lw=1.4, zorder=6)
     ax.plot([T[2][0]],[T[2][1]], 'o', ms=9, mfc='none', mec=C['red'], mew=2.2, zorder=8)
     S.tag(ax, T[2], '到中点 $0.866D$\n阈值 $D/2$，超出 73%', dy=26)
-    S.tag(ax, (0.62, 0.62), '最小包围圆\n半径 $D/\\sqrt{3}\\approx0.577D$', color=C['orange'], dx=28, dy=0)
-    ax.set_xlim(-1.05,1.45); ax.set_ylim(-.75,1.45); ax.set_aspect('equal'); ax.set_anchor('N')
+    S.tag(ax, (-.02, -.44), '最小包围圆　半径 $D/\\sqrt{3}\\approx0.577D$', color=C['orange'], dx=0, dy=0)
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_xlim(-.70, .70); ax.set_ylim(-.62, 1.26)
     ax.set_xticks([]); ax.set_yticks([])
     for sp in ('top','right','bottom','left'): ax.spines[sp].set_visible(False)
     ax.set_title('(b) 最坏情形：边长为 $D$ 的正三角形', pad=9)
