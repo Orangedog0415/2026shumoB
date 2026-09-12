@@ -255,6 +255,10 @@ class Handler(BaseHTTPRequestHandler):
 
             with S.exec_lock:
                 http, accepted, extra, reason = self._business(path, action)
+            # 执行完成即注销 inflight：否则串行客户端在收到响应后立刻发下一个动作时，
+            # 上一条请求的线程可能还没走到 finally，会被误判成“并发发送了不同动作”而回 409。
+            with S.lock:
+                S.inflight.pop(tid, None)
 
             if fault:
                 kind, _, arg = fault.partition('=')
