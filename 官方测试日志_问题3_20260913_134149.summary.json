@@ -1,0 +1,45 @@
+{
+  "problem": 3,
+  "status": "completed",
+  "detail": "",
+  "net": "正八边形 974 m（8 点）",
+  "points": 8,
+  "robot_id": "202613001162",
+  "base": "http://127.0.0.1:2026",
+  "cleared_channels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    13,
+    17,
+    20
+  ],
+  "cleared_count": 13,
+  "server_virtual_time_s": 4114.471623,
+  "local_virtual_time_s": 4114.472,
+  "virtual_time_drift_s": 1e-06,
+  "time_breakdown_s": {
+    "move": 3374.472,
+    "detect": 540.0,
+    "switch": 105.0,
+    "clear": 95.0
+  },
+  "actions": 131,
+  "http_requests": 133,
+  "retries": 0,
+  "measure_results": {
+    "direction": 33,
+    "near": 0,
+    "no_signal": 75
+  },
+  "real_seconds_used": 1.5,
+  "real_seconds_left": 1198.6,
+  "log": "官方测试日志_问题3_20260913_134149.jsonl"
+}

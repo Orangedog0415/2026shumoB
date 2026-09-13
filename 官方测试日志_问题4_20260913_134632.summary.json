@@ -1,0 +1,43 @@
+{
+  "problem": 4,
+  "status": "completed",
+  "detail": "",
+  "net": "NET4_V7（25 点，17 547 m，方案七）",
+  "points": 25,
+  "robot_id": "202613001162",
+  "base": "http://127.0.0.1:2026",
+  "cleared_channels": [
+    2,
+    3,
+    4,
+    5,
+    7,
+    9,
+    10,
+    12,
+    16,
+    19,
+    20
+  ],
+  "cleared_count": 11,
+  "server_virtual_time_s": 6131.624684,
+  "local_virtual_time_s": 6131.625,
+  "virtual_time_drift_s": 0.0,
+  "time_breakdown_s": {
+    "move": 4327.625,
+    "detect": 1450.0,
+    "switch": 281.0,
+    "clear": 73.0
+  },
+  "actions": 307,
+  "http_requests": 309,
+  "retries": 4,
+  "measure_results": {
+    "direction": 36,
+    "near": 0,
+    "no_signal": 254
+  },
+  "real_seconds_used": 7.7,
+  "real_seconds_left": 1196.1,
+  "log": "官方测试日志_问题4_20260913_134632.jsonl"
+}
