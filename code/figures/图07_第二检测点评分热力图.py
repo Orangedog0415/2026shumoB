@@ -63,7 +63,7 @@ if __name__ == '__main__':
     for sp in ('top','right'): ax.spines[sp].set_visible(False)
     ax.legend(loc='upper center')
     ax.set_title('(b) 过最优点的剖线：偏离最优点的代价', pad=9)
-    S.note(ax, '最优点落在安全候选域的边界上（最远顶点 999.0 m），\n所以沿 $x$ 正向没有可行点——可探测约束在最优点处收紧。\n偏离 50 m 评分上升 3%~9%，网格解与连续解只差 2.0%。', loc='lower right')
+    # 原来这里有一段三行说明（最优点落在候选域边界、偏离 50 m 的代价），会压住曲线与两条参考线，已移到正文。
 
     fig.suptitle('图 7　第二检测点的评分场与选点结果', fontsize=13.5, color=C['ink'], y=1.0)
     print('已输出：', S.save(fig, '图07_第二检测点评分热力图'))

@@ -27,7 +27,8 @@ C = dict(
 
 def _pick_font():
     have = {f.name for f in font_manager.fontManager.ttflist}
-    for n in ('Noto Sans CJK SC','Source Han Sans SC','Microsoft YaHei','SimHei','WenQuanYi Zen Hei'):
+    for n in ('Noto Sans CJK SC','Source Han Sans SC','Microsoft YaHei','SimHei','WenQuanYi Zen Hei',
+              'Noto Sans CJK JP','Noto Sans CJK TC'):   # .ttc 只注册首个 face 时的兜底，字形同属一套 CJK
         if n in have: return n
     return 'DejaVu Sans'
 
@@ -67,19 +68,19 @@ def tour(ax, pts, start=(0.,0.), color=None, lw=1.6, label=None, z=4):
     ax.plot([start[0]],[start[1]], marker='s', ms=7, mfc=C['white'], mec=color, mew=1.6, zorder=z+1)
     return sum(math.dist((xs[i],ys[i]),(xs[i+1],ys[i+1])) for i in range(len(xs)-1))
 
-def note(ax, s, loc='lower left', dy=0.):
+def note(ax, s, loc='lower left', dy=0., fs=9):
     """图内说明文字：垫一层半透明白底，压在路线之上也读得清。"""
     P = {'lower left':(.025,.025,'left','bottom'), 'lower right':(.975,.025,'right','bottom'),
          'upper left':(.025,.975,'left','top'),     'upper right':(.975,.975,'right','top')}
     x, y, ha, va = P[loc]; y += dy
-    ax.text(x, y, s, transform=ax.transAxes, ha=ha, va=va, fontsize=9, color=C['ink2'],
+    ax.text(x, y, s, transform=ax.transAxes, ha=ha, va=va, fontsize=fs, color=C['ink2'],
             linespacing=1.55, zorder=9,
             bbox=dict(boxstyle='round,pad=0.35', fc=C['white'], ec='none', alpha=.82))
 
-def tag(ax, xy, s, color=None, dx=0., dy=-18.):
+def tag(ax, xy, s, color=None, dx=0., dy=-18., fs=8.5):
     """指向图元的小标签，同样垫白底，避免压住线条。"""
     ax.annotate(s, xy=xy, xytext=(dx,dy), textcoords='offset points', ha='center', va='center',
-                fontsize=8.5, color=color or C['red'], zorder=9,
+                fontsize=fs, color=color or C['red'], zorder=9,
                 bbox=dict(boxstyle='round,pad=0.25', fc=C['white'], ec='none', alpha=.85))
 
 def save(fig, name, outdir=None):

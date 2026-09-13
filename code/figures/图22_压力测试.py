@@ -18,6 +18,7 @@ except Exception: pass
 def _m(n, f):
     s = importlib.util.spec_from_file_location(n, str(f)); m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 S = _m('S', HERE/'_绘图样式.py'); R = _m('R', HERE/'_结果数据.py'); C = S.C
+FS = 2.5                                   # 全图文字统一放大倍数（相对原始字号）
 
 def box(ax, groups, title, xlabel):
     keys = list(groups)
@@ -29,16 +30,20 @@ def box(ax, groups, title, xlabel):
     rng = np.random.default_rng(0)
     for i, d in enumerate(data):
         ax.plot(rng.normal(i+1, .055, len(d)), d, 'o', ms=3.2, color=C['orange'], alpha=.55, zorder=5)
-    ax.set_xticks(range(1, len(keys)+1)); ax.set_xticklabels(keys, fontsize=9)
-    ax.set_title(title, pad=9); ax.set_xlabel(xlabel)
+    ax.set_xticks(range(1, len(keys)+1)); ax.set_xticklabels(keys, fontsize=9*FS)
+    ax.set_title(title, pad=12); ax.set_xlabel(xlabel)
     ax.grid(True, axis='y'); ax.set_axisbelow(True)
     for sp in ('top','right'): ax.spines[sp].set_visible(False)
 
 if __name__ == '__main__':
     S.use_style()
+    plt.rcParams.update({'xtick.labelsize': 9*FS, 'ytick.labelsize': 9*FS,
+                         'axes.labelsize': 10*FS, 'axes.titlesize': 11.5*FS})
     rows = R.STRESS
     ts = np.array([r['t'] for r in rows])
-    fig, axes = plt.subplots(1, 3, figsize=(13.6, 5.0), gridspec_kw=dict(wspace=.26))
+    fig, axes = plt.subplots(1, 3, figsize=(18.6, 9.2),
+                             gridspec_kw=dict(wspace=.28, width_ratios=[1, 1.24, 1.18]))
+    fig.subplots_adjust(left=.085, right=.985, top=.80, bottom=.175)
 
     g = {}
     for r in rows: g.setdefault('N = %d' % r['n'], []).append(r['t'])
@@ -46,17 +51,18 @@ if __name__ == '__main__':
     axes[0].set_ylabel('每源平均定位清除时间 / s')
 
     g = {}
-    for r in rows: g.setdefault(r['layout'] + '\n' + r['rmode'], []).append(r['t'])
+    for r in rows: g.setdefault(r['layout'] + '\n' + r['rmode'].replace(' 1000 m', '1000'), []).append(r['t'])
     box(axes[1], g, '(b) 按布局 × 接收半径', '')
 
     g = {}
-    for r in rows: g.setdefault(r['err'].replace(' ', '').replace('\u2212', '-'), []).append(r['t'])
+    SHORT = {'交接误差场': '交接场', '每点独立均匀': '独立均匀', '恒 +1°': '恒 +1°', '恒 −1°': '恒 −1°', '每点独立 ±1°': '独立 ±1°'}
+    for r in rows: g.setdefault(SHORT.get(r['err'], r['err']), []).append(r['t'])
     box(axes[2], g, '(c) 按误差模型', '')
-    axes[2].tick_params(axis='x', labelrotation=30)
+    axes[2].tick_params(axis='x', labelrotation=40)
 
     for ax in axes: ax.set_ylim(0, max(ts)*1.12)
-    axes[0].text(.03, .965, '180 局，未全清 0 局\n每源平均 %.0f s，中位 %.0f s，最大 %.0f s'
+    axes[0].text(.04, .035, '180 局，未全清 0 局\n每源平均 %.0f s\n中位 %.0f s，最大 %.0f s'
                  % (ts.mean(), np.median(ts), ts.max()), transform=axes[0].transAxes,
-                 va='top', fontsize=9.2, color=C['ink2'], linespacing=1.6)
-    fig.suptitle('图 22　方案七的保证性压力测试（问题四，180 局）', fontsize=13.5, color=C['ink'], y=1.0)
+                 va='bottom', fontsize=9.2*FS, color=C['ink2'], linespacing=1.6)
+    fig.suptitle('图 22　方案七的保证性压力测试（问题四，180 局）', fontsize=13.5*FS, color=C['ink'], y=.965)
     print('已输出：', S.save(fig, '图22_压力测试'))

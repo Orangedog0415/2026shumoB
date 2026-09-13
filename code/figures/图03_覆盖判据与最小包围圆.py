@@ -41,7 +41,11 @@ def ratios(n=3000, seed=11):
 
 if __name__ == '__main__':
     S.use_style()
-    fig, axes = plt.subplots(1, 3, figsize=(13.6, 6.2))
+    FS = 2.5                                    # 全图文字统一放大倍数（相对原始字号）
+    plt.rcParams.update({'xtick.labelsize': 9*FS, 'ytick.labelsize': 9*FS,
+                         'axes.labelsize': 10*FS, 'axes.titlesize': 11.5*FS})
+    fig, axes = plt.subplots(1, 3, figsize=(18.0, 9.6))
+    fig.subplots_adjust(wspace=.24, left=.075, right=.975, top=.735, bottom=.135)
 
     # ---- (a) Thales 等价形式 ----
     ax = axes[0]
@@ -58,16 +62,16 @@ if __name__ == '__main__':
         ax.plot([X[0]],[X[1]], 'o', ms=7, mfc=C['white'], mec=col, mew=1.8, zorder=8)
         ax.add_patch(Arc(X, .42, .42, angle=0, theta1=math.degrees(math.atan2(U[1]-X[1],U[0]-X[0])),
                          theta2=math.degrees(math.atan2(V[1]-X[1],V[0]-X[0])), color=col, lw=1.3, zorder=6))
-        S.tag(ax, X, '%s\n$\\angle UXV$ = %.0f°' % (lab, ang), color=col, dy=30 if ok else 34)
-    ax.text(0,-.13,'$M$', ha='center', va='top', color=C['ink2'], fontsize=10)
+        S.tag(ax, X, '%s\n$\\angle UXV$ = %.0f°' % (lab, ang), color=col, dy=19*FS if ok else 23*FS, fs=8.5*FS)
+    ax.text(0,-.13,'$M$', ha='center', va='top', color=C['ink2'], fontsize=10*FS)
     ax.plot([0],[0],'+',ms=10,mew=1.8,color=C['ink'],zorder=7)
-    ax.text(U[0],-.13,'$U$',ha='center',va='top',color=C['ink2'],fontsize=10)
-    ax.text(V[0],-.13,'$V$',ha='center',va='top',color=C['ink2'],fontsize=10)
+    ax.text(U[0],-.13,'$U$',ha='center',va='top',color=C['ink2'],fontsize=10*FS)
+    ax.text(V[0],-.13,'$V$',ha='center',va='top',color=C['ink2'],fontsize=10*FS)
     ax.set_aspect('equal', adjustable='datalim')
-    ax.set_xlim(-1.10, 1.10); ax.set_ylim(-1.12, 1.85)
+    ax.set_xlim(-1.32, 1.32); ax.set_ylim(-1.12, 1.85)
     ax.set_xticks([]); ax.set_yticks([])
     for sp in ('top','right','bottom','left'): ax.spines[sp].set_visible(False)
-    ax.set_title('(a) Thales 判据：$X$ 在直径圆内 $\\Leftrightarrow$ $\\angle UXV\\geq 90°$', pad=9)
+    ax.set_title('(a) Thales 判据\n$X$ 在直径圆内 $\\Leftrightarrow$\n$\\angle UXV\\geq 90°$', pad=14)
 
     # ---- (b) 最坏情形：正三角形 ----
     ax = axes[1]
@@ -79,13 +83,13 @@ if __name__ == '__main__':
     ax.plot([-.5,.5],[0,0], '-', color=C['ink'], lw=2.0, zorder=6)
     ax.plot([0,0],[0,math.sqrt(3)/2], ls=(0,(2,2)), color=C['red'], lw=1.4, zorder=6)
     ax.plot([T[2][0]],[T[2][1]], 'o', ms=9, mfc='none', mec=C['red'], mew=2.2, zorder=8)
-    S.tag(ax, T[2], '到中点 $0.866D$\n阈值 $D/2$，超出 73%', dy=26)
-    S.tag(ax, (-.02, -.44), '最小包围圆　半径 $D/\\sqrt{3}\\approx0.577D$', color=C['orange'], dx=0, dy=0)
+    S.tag(ax, T[2], '到中点 $0.866D$\n阈值 $D/2$\n超出 73%', dy=21*FS, fs=8.5*FS)
+    S.tag(ax, (-.02, -.46), '最小包围圆\n半径 $D/\\sqrt{3}\\approx0.577D$', color=C['orange'], dx=0, dy=0, fs=8.5*FS)
     ax.set_aspect('equal', adjustable='datalim')
-    ax.set_xlim(-.70, .70); ax.set_ylim(-.62, 1.26)
+    ax.set_xlim(-.86, .86); ax.set_ylim(-.62, 1.26)
     ax.set_xticks([]); ax.set_yticks([])
     for sp in ('top','right','bottom','left'): ax.spines[sp].set_visible(False)
-    ax.set_title('(b) 最坏情形：边长为 $D$ 的正三角形', pad=9)
+    ax.set_title('(b) 最坏情形\n边长为 $D$ 的正三角形', pad=14)
 
     # ---- (c) 随机算例统计 ----
     ax = axes[2]
@@ -95,12 +99,12 @@ if __name__ == '__main__':
             alpha=.85, edgecolor=C['white'], lw=.5, log=True)
     ax.axvline(math.sqrt(3), color=C['orange'], lw=1.4, ls=(0,(4,3)))
     ax.set_ylim(.7, ax.get_ylim()[1]*3)
-    S.tag(ax, (math.sqrt(3), 4.0), '正三角形上界\n$\\sqrt{3}\\approx1.732$', color=C['orange'], dx=-30, dy=0)
-    ax.set_xlabel('最远顶点到直径中点的距离 / $(D/2)$'); ax.set_ylabel('算例数（对数刻度）')
+    S.tag(ax, (math.sqrt(3), 4.0), '正三角形上界\n$\\sqrt{3}\\approx1.732$', color=C['orange'], dx=-31*FS, dy=0, fs=8.5*FS)
+    ax.set_xlabel('最远顶点距离 / $(D/2)$'); ax.set_ylabel('算例数（对数刻度）')
     ax.grid(True, axis='y'); ax.set_axisbelow(True)
     for sp in ('top','right'): ax.spines[sp].set_visible(False)
-    ax.set_title('(c) 3000 组随机算例：不覆盖占 %.1f%%' % (100*bad), pad=9)
-    S.note(ax, '取值恒 $\\geq 1$，等于 1 即覆盖成立\n实测最大 %.2f，未超过正三角形给出的上界 $\\sqrt{3}$\n纵轴取对数，否则首个柱子会压掉整条尾巴' % r.max(), loc='upper right')
+    ax.set_title('(c) 3000 组随机算例\n不覆盖占 %.1f%%' % (100*bad), pad=14)
+    S.note(ax, '取值恒 $\\geq 1$，$=1$ 即覆盖\n实测最大 %.2f $<\\sqrt{3}$\n纵轴为对数刻度' % r.max(), loc='upper right', fs=9*FS)
 
-    fig.suptitle('图 3　直径圆覆盖判据的几何解释、最坏情形与经验分布', fontsize=13.5, color=C['ink'], y=1.0)
+    fig.suptitle('图 3　直径圆覆盖判据的几何解释、最坏情形与经验分布', fontsize=13.5*FS, color=C['ink'], y=.988)
     print('已输出：', S.save(fig, '图03_覆盖判据与最小包围圆'), '　不覆盖比例 %.3f' % bad)

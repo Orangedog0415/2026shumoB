@@ -14,3 +14,6 @@ Thumbs.db
 desktop.ini
 ~$*
 *.tmp
+
+# git 客户端遗留的锁文件副本，不入库
+_git_locks/
